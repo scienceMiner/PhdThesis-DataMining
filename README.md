@@ -1,8 +1,6 @@
-# Phd Thesis- Data Mining
+# Data Mining Temporal and Indefinite Relations using Numerical Dependencies
 ---
-## Data Mining Temporal and Indefinite Relations using Numerical Dependencies.
-
-###Department of Computer Science, University College London, University of London
+## Department of Computer Science, UCL, University of London
 ---
 
 We propose that data mining, the search for useful, non-trivial and previously unknown information within a database,
@@ -29,7 +27,7 @@ All simulations were implemented in C++.
 ### Copyright
 The work herein is Copyright 1999-2029 Ethan Collopy and The University of London. No rights are given to reproduce or modify this work without permission.
 
-###Plagiarism
+### Plagiarism
 No point!
 
 ### LaTeX compilation
