@@ -1,0 +1,122 @@
+{chap:intro}
+{sec:int_hyp}
+{sec:int_kdd}
+{sec:int_contrib}
+{sec:int_outline}
+
+{chap:review}
+	{sec:db_for_dm}
+	{sec:relmod}
+		{subsec:reldbdes}
+		{subsec:rev_chase}
+		{subsec:rev_ndtheory}
+		{subsec:rev_indef}
+		{subsec:temdat}
+	{sec:datmin}
+		{subsec:fdmining}	
+		{subsec:temp_mine}
+		{subsec:rev_fd_sim}
+		{subsec:dat_samp}
+
+
+{chap:numdep}
+	{sec:nd_approx}
+	{sec:nd_chase}
+	{sec:nd_inf}
+		{subsec:nd_axiom}
+		{subsec:nd_ch_inf}
+	{sec:nd_datamine}
+	{sec:nd_evolve}
+	{sec:nd_disc}
+		{subsec:nd_ar}
+{nd:subsec:mean}
+
+{chap:consistency}
+	{sec:cp_approx}
+		{subsec:cp_jackcomparison} 
+	{sec:cp_apps}
+	{sec:cp_disc}
+
+
+{chap:templog}
+	{sec:tl_intro}
+	{sec:tl_why}
+	{sec:tl_nd}
+		{subsec:tl_tsa_nd}
+	{sec:tl_tsa}
+		{subsec:tl_tsabasic}
+		{subsec:tl_tsadefs}
+		{subsec:tl_catdm}
+	{sec:tl_relations}
+	{sec:tl_ndltl}
+	{sec:tl_disc}
+	{sec:tl_properties}
+	{sec:tl_disc}
+
+{chap:tempresult}
+	{sec:tr_intro}
+	{sec:tr_propmodel}
+		{subsec:tr_resppers}
+		{subsec:tr_genalg}
+	{sec:tr_relseq}
+		{subsec:tr_relres}
+		{subsec:tr_res}
+		{subsec:tr_mbb}
+	{sec:tr_tsares}
+	{sec:tr_case1}
+		{subsec:tr_analysis}
+		{subsec:tr_mav_analysis}
+		{subsec:tr__diff_analysis}
+		{subsec:tr_mbb_analysis}	
+	{sec:tr_real_analysis}
+	{sec:tr_crit_an}
+	{sec:tr_sim_ass}
+	{sec:tr_disc}
+
+{chap:conclusion}
+	{sec:conc_contrib}
+
+
+
+
+---------------------
+FIGURES
+---------------------
+{rev:fd_chase}
+{rev:bootstrap}
+{numdep:fig:mu}
+{numdep:fig:nd_chase}
+{numdep:fig:nd_mine}
+{numdep:fig:mutate}
+{numdep:fig:iterate}
+{cp:fig:indef_chase}
+{cp:fig:bootstrap}
+{cp:fig:jackknife}
+{cp:fig:world_limit}
+{cp:fig:check_cons}
+{cp:fig:nd_gen}
+{cp:fig:chase\_gen}
+
+{tr:fig:resp}
+
+
+
+
+--------------------
+ALGORITHMS
+--------------------
+{alg:chase}
+
+---------------------
+LEMMAS & THEOREMS
+---------------------
+{rev:lem_cc}
+{rev:lem_bd}
+{rev:lem_fd_att}
+
+---------------------
+TABLES
+---------------------
+{tab:tr_arg_deb_res} 
+{tab:tr_al_hfx_res}
+{tab:tr_bp_sh_res}

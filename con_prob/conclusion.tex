@@ -1,0 +1,144 @@
+\chapter{Conclusion}\label{chap:conc}
+
+\section{Topics not treated}
+
+\section{Further Research \& Aims}
+\section{Research Areas}
+
+\subsection{Active Databases}
+
+An Active Database is a database which incorporates automatic triggering
+for updates in response to either an internal or external event.  The desired
+response may be achieved by forward chaining using the event-condition-
+action model.
+\begin{definition}[Event - Condition - Action model]
+\begin{rm}
+The Event-Condition-Action model (ECA model, in the sequel)
+provides an additional condition to be satisfied before a rule can
+occur. It takes the form {\em on $ <event>$ if $<condition>$ then $<action>$}.
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[Active Database]
+\begin{rm}
+An Active Database consists of:
+\begin{enumerate}
+\item An event monitoring subsystem
+\item The rule base, defined under the ECA model.
+\item An execution model - the semantics for rule application which may
+implement different sequences of rule firing mechanisms.
+\end{enumerate}
+\end{rm}
+\end{definition}
+
+There are many applicable actions for the automatic triggering within an 
+active database, including insertion, deletion and rule modification.  It is easy
+to see that active mechanisms can prevent the violation of dependencies at
+any stage of operation of a database.  Within the event monitoring subsystem
+a condition which should never hold can have a recovery action and will always
+be triggered by a true event.  Therefore the active database can provide 
+recovery mechanisms for dependency preservation using deletion, modification
+or a combination of both.  
+
+
+\subsection{Object Oriented Database Mining}
+
+Object-Oriented Databases, (OODBs, in the sequel), employ rich data structures, 
+complex data objects, class/subclass hierachies and numerous other features
+which will add complexity to any data mining applications employed in this 
+area.\\
+
+(works in 93) present an overview of some useful methods for data mining in
+OODBs though they do not consider the possibilities of either redundant or
+incomplete information that may occur in an OODB.\\
+
+A brief description of their OODB data mining strategy is as follows:
+\begin{enumerate}
+\item The query processing mechanism, consisting of -
+\begin{enumerate}
+\item A Learning Request which initiates the data mining process.
+\item A Data Retrieval process which is assigned to collect information that is 
+relevant
+ to the request into a data set.
+\end{enumerate}
+
+\item Generalise the set of retrieved data using any background knowledge available 
+and the generalisation operators.
+\item Simplify the generalised data and transform it into generalised rules.
+
+\end{enumerate}
+
+
+\subsection{Data Mining for Database Design}
+
+The various approaches to the dependency inference problem could form part of
+a larger toolkit for the design of a suitable relation using example relations 
+representative of the database.  This was first proposed in \cite{sm81} though the
+main body of work is in \cite{mr86,mr92,km95} and Mannila and R\"{a}ih\"{a}
+have themselves implemented the Design-By-Example toolkit.\\
+
+\cite{yz88} approaches schema design from the context of rough sets, presenting
+a conceptual schema design expert system motivated by the requirement of 
+knowledge of the intended application for a database which the schema designer
+often lacks. The expert system:
+\begin{itemize}
+\item Generates a conceptual schema - semantic net/event model
+\item Interacts with the user - in case of changes
+\item contains a knowledge baseof useful conceptual schema design techniques
+\end{itemize}
+
+Machine learning techniques of learning from examples are incorporated into
+the system for
+\begin{itemize}
+\item Generating schema rules
+\item Recognising functional dependencies
+\end{itemize}
+In this manner a learning system may aid the database designer in
+recognising existing dependencies about which the designer did not
+know.  It is assumed that a database designer knows all dependencies
+which are required to hold in a database prior to design though often
+this is not the case.\\
+
+\cite{yz88} use learning algorithms based upon the inductive approach
+of generating hypotheses consisting with all known examples and 
+generated to the highest extent (least specific).   The probabilistic
+approach for the rough set model is described where all possible
+situations are not known.  Probabilistic approximation classification
+looks at the conclusions which are arrived at by the learning system
+and produces a set of probabilistic decision rules.\\
+
+\subsection{Time Series in Data Mining}
+
+There exist many possibilities for combining Time Series and
+Database Mining techniques.  Across a series of snapshot
+relations containing temporal information it may be
+possible to analyse the data for the existence of a time series
+and also incorporate dependency mining techniques so as to
+improve the understanding of the data.\\
+
+\cite{hie90} provides a guide to the ESTES {\em Expert Time
+Series System}.  Useful points to note from this work is that
+its aim is to provide help for the inexperienced time series
+analyst (user).  In the initial analysis phase the user select handling
+methods for the data based on an analysis of the graphical
+representation.  Throughout time series analysis the value of
+a graph cannot be overestimated.  The ESTES system also allows for
+the user, if he so desires, to exploit their own knowledge of the 
+data by providing input to the system.  Obviously the user is
+notified if a conflict occurs between its own and the users
+understanding of the data.  \\
+
+It is also worth noting that unlike neural methods of analysis for
+time series, such symbolic methods enable the user to trace the
+reasoning behind the analysis provided.  The crossover between
+time series analysis and dependency mining  should go even
+further in enhancing such understanding of time series data.\\
+
+\subsection{Hybrid Possibilities}
+
+Temporal Reasoning within Dependency data mining.  EXPLAIN!!
+
+
+\subsection{Using Simulated Annealing in Data Dependency Mining}
+

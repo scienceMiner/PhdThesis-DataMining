@@ -1,0 +1,34 @@
+# check word in all thesis chapters
+ 
+ 
+set word = ${argv[1]}
+ 
+
+cd introduction
+grep $word introduction.tex
+cd ..
+
+cd review
+grep $word review.tex
+cd ..
+
+cd numdep
+grep $word numdep.tex
+cd ..
+
+cd consistency
+grep $word consist.tex
+cd ..
+
+cd templog
+grep $word templog.tex
+cd ..
+
+cd tempresult
+grep $word tempresult.tex
+cd ..
+
+cd conclusion
+grep $word conclusion.tex
+cd ..
+

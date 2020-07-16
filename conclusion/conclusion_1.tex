@@ -1,0 +1,193 @@
+\chapter{Summary and Conclusion}\label{chap:conclusion}
+
+In this thesis we have presented a number of new techniques for data
+mining in indefinite and temporal databases. We have demonstrated
+throughout this thesis how NDs are useful within the data mining
+process. In other areas of the thesis we have provided empirical
+evidence that our dynamic use of resampling and our temporal logic for
+time sequences are both easily applicable and useful. 
+
+\section{Contribution of this work}\label{sec:conc_contrib}
+
+Chapter~\ref{chap:numdep} has shown that NDs are viable dependencies
+within the relational model, extending the intentions of Grant and Minker
+\cite{gm85b,gm85a} when they introduced NDs as extensions of FDs for
+greater flexibility in schema specification. Principally we use the
+Chase for NDs, proven to be sound and complete herein, for the
+inference of NDs given that a finite axiomatisation has been shown not
+to exist \cite{gm85b}. In this way the Chase allows for ND inference
+to be tested in database applications. We also show how NDs themselves
+may be used within data mining or data analysis algorithms to
+approximate FD sets, demonstrated via an evolutionary database design
+algorithm. NDs were shown to efficiently extend the class of methods for the
+knowledge discovery of approximating FD sets in a relation. ND mining
+is limited in the case when all the domain elements on the right hand
+side of an FD are used, when A $\to^k$ B holds and $\mid DOM(B) \mid$ =
+$k$. We introduced the mean ND to combat this problem which provides
+additional information within data mining. A metric for ND sets is
+also provided which we employed within our work on indefinite
+information in relations.
+
+\medskip
+
+We studied indefinite information in relations, concentrating solely
+on the consistency problem, known to be NP-complete. We created a
+general randomised procedure which made use of a chase developed using
+NDs for indefinite relations and a dynamic resampling technique. We
+chose to employ resampling to be able to make statistically valid
+inference from a sample of possible worlds taken from an indefinite
+relation. Each possible world satisfies an ND set. Resampling from a
+sample of possible worlds allows us to determine approximate values of
+variance and standard deviation. Our randomised algorithms require a
+sufficient sample size upon which to apply their selection functions
+so as to obtain decent approximations to FD set satisfaction. We found
+that as the variance and standard deviation change with the degree of
+indefinite cells in a relation it is possible to apply resampling
+iteratively on increasing sample sizes until an approximate fixpoint
+is reached. Independent of our work, \cite{jl96} argue, in a position
+paper, for dynamic sampling to be adopted for data mining instead of
+naive sampling techniques in use. Our work does just this. Extensive
+simulations on these methods showed that the Chase is of use in
+a limited capacity and that the resampling is useful for providing an
+upper bound on the number of possible worlds required.
+
+\medskip
+
+In Chapters~\ref{chap:templog} and~\ref{chap:tempresult} we
+demonstrate the practicality of NDs in temporal databases. Given that
+changing ND sets, from a user supplied template, may only vary on
+their branching factor we can view the sequence of changes as a time
+series. Considering specific time series analysis techniques as a
+basis we developed a logic using modal operators to discover rules
+which a sequence may satisfy. Necessary restriction of the formulae or
+our temporal logic to properties, used within program verification,
+proved to be highly useful for knowledge discovery. We make no grand
+claims on the formalisation of our logic with respect to it being a
+panacea for time series data mining though we note that it allows for
+knowledge to be represented succinctly and is highly
+practical. Further theoretical analysis of the logic, outside the
+scope of this thesis, is definitely required. It is most likely that
+logics for time series analysis could be developed in many different
+ways.
+
+\medskip
+
+Properties of temporal logic which were defined for program
+verification have been extended for data mining purposes. The
+specifications required in programs for correctness analysis lends
+itself well to knowledge discovery where changing inputs over time may
+frequently satisfy similar conditions. Properties of temporal logic
+have not, in the limits of our experience, been considered for data
+mining. 
+
+\medskip
+
+As we have shown this thesis is a contribution to the arena of data
+mining in both techniques and tools. We show that NDs are viable tools
+for data mining and believe that the techniques of our randomised algorithms,
+dynamic resampling and temporal logic have clear application.  We feel
+that our hypothesis of NDs for data mining in non-standard relations
+has been vindicated via the work demonstrated in this thesis.
+
+\section{Applications}
+
+Further Resampling Applications in Data Mining
+
+\section{Directions for future research}
+
+There are many directions for possible future research posed by this
+work, in domains of dependency theory (for data mining), temporal/time
+series data mining, and indefinite data mining. We begin by
+considering a direct extrapolation of this research.
+ 
+\subsection{Open Problems}
+
+In the arena of NDs we could further extend their applicability by the
+creation of scaling and translation functions, as used for
+transformation functions in time series similarity
+\cite{alss95}. These functions ahave direct application when we are
+dealing with relations that are of vastly different sizes. As noted in
+section~\ref{sec:nd_disc} we could also investigate more sophisticated
+algorithms for the mining of NDs in standard relations. This work
+could make use of many heuristics. One example may be that we do not
+have to consider mining the remainder of a relation if we have found a
+partition for an ND whose branching factor is greater than over half
+the number of tuples in the relation.
+	
+\medskip
+The work on searching for a satisfying possible world within an
+indefinite relation provides numerous avenues for further
+study. Clearly, it would be highly interesting to convert some
+scheduling representations for a real-world study. We could also
+analyse rates of convergence for our resampling process with respect to the
+nature of an indefinite relation and the FD set
+used. \cite{efr82,pw93} have shown that the Bootstrap converges with
+respect to an increasing sample size; further study of this within
+such dynamic settings as our application would be very useful, both in
+terms of data mining and of relevance to a multi-disciplinary research
+field. Phase transitions in indefinite
+relations, referred to in section~\ref{sec:cp_disc}, would be a most
+interesting further study, complementing previous 
+phase transition work with dependencies and relations providing a real
+information content. 
+
+\medskip
+
+Finally, our work on temporal data mining requires a thorough study of
+the logic we have created. The inclusion of time series functionality
+makes the expressive nature of the logic unclear. The flexibility of
+the logic means that it is both easily extended. Further
+research into time series behaviour may provoke the need for
+additional operators. We believe that this would include functions
+designed specifically for the analysis of non-linear relationships.
+We would also like to
+be able to spend time developing sophisticated algorithms which use
+this logic for temporal data mining. One such example would be to
+discover a suitable sequence size upon which to conduct the data
+mining process. Error functions for regression analysis could also be
+incorporated into the logic. This could be achieved with an integration with
+regression analysis. This would be desirable from a 
+systems point of view.  
+
+\section{The Evolution of Data Mining}
+
+Data Mining is a rapidly expanding field, not least due to a
+concentrated global effort into the extraction of information from
+data. The state of the art applications are still led by recent
+theoretical developments. There will be a significant increase in the
+use of statistical developments within data mining products. Our use
+of resampling in both the temporal and indefinite domains shows how
+such novel processes can be applied easily and effectively. More data
+mining tools will incorporate sampling and resampling in the quest for
+information which may {\em characterise} a data set.
+
+\medskip
+
+There have been recent criticisms that data mining, as yet, is not
+fully integrated with the database interface \cite{man97,joh97}. It is
+only a matter of time before the next relational database upgrade
+includes a data mining toolkit. For clarity and ease of use, there is
+potential for the inclusion of such items as NDs and the temporal logic
+presented here, for clarity and ease of use for the data miner. This,
+and other, logics would make use of statistical functions within the
+database query language. 
+
+\medskip
+The process of data mining will mesh with databases so that predictors
+and forecasting can be assessed at any time, which may be NDs or other
+dependencies. These predictors
+themselves may be mined, for a 2nd order data mining.
+The technique of building our logic
+upon the atoms of dependencies is perhaps a first step in this direction. 
+
+\section{Conclusions}
+
+The field of knowledge discovery is rapidly expanding due to the
+ever-increasing amounts of data being stored. The user-centric
+processes of data mining are extending the fields of statistics,
+artificial intelligence and machine learning into a new science
+\cite{fu96}. 
+
+
+
+

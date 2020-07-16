@@ -1,0 +1,31 @@
+# check word in all thesis chapters
+ 
+ 
+cd introduction
+grep 'definition~\\' introduction.tex
+cd ..
+
+cd review
+grep 'definition~\\' review.tex
+cd ..
+
+cd numdep
+grep 'definition~\\' numdep.tex
+cd ..
+
+cd consistency
+grep 'definition~\\' consist.tex
+cd ..
+
+cd templog
+grep 'definition~\\' templog.tex
+cd ..
+
+cd tempresult
+grep 'definition~\\' tempresult.tex
+cd ..
+
+cd conclusion
+grep 'definition~\\' conclusion.tex
+cd ..
+

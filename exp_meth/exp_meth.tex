@@ -1,0 +1,378 @@
+\chapter{Simulation Methodology}\label{app:sim_meth}
+
+We now describe our process for conducting experiments, expanding the
+outlines given in Chapters~\ref{chap:numdep},~\ref{chap:consistency},
+and~\ref{chap:tempresult}, demarcated into sections on evolving
+relations, the consistency problem, and simulations on our temporal
+logic, respectively.
+
+
+\medskip
+The code was implemented in GNU C++ version 2.7.2 on a UNIX platform running
+Sun Solaris 2.5.1.  C++ with
+the embedded CORAL deductive
+database interface \cite{rss92} was also used for evolving relations
+in Chapter~\ref{chap:numdep}. For efficiency reasons the code for procedures
+described in Chapters~\ref{chap:consistency} and~\ref{chap:tempresult}
+was implemented in C++ alone.
+ 
+\section{Simulation Details: Evolving
+Relations}\label{sec:sim_er}
+
+\subsection{Simulation Range Decisions}
+
+
+We selected 72 FD sets many of which originated from a number of well
+known DB texts including \cite{Mann92,databasefound,atze93}. These sets were 
+divided into BCNF and non-BCNF for investigative purposes. Given
+that an Armstrong Relation can only be generated for a set of FDs F when
+the relation size has at least \linebreak $\mid$ GEN(F) $\mid$ + 1
+tuples, where 
+GEN(F) is defined in Definition~\ref{def:GEN}, then we chose to vary
+the domain and tuple sizes from $G/2$ to $G$ and  $G/2$ to $3G$,
+respectively. This allowed for the scale of the randomly generated
+relations to be related to F, as well as ensuring that we would have a
+good chance of finding an AR for each FD set. This choice was
+justified by finding ARs in 63 out of our 72 selected FD sets.  We
+created a batch of 1000 runs, the process of evolving a randomly
+generated relation to absorption, for each domain and tuple
+combination. 1000 runs allowed us to find reliable averages for each
+domain and tuple combination. 
+
+\medskip
+
+Random Relations were created by random number
+selection within a uniform distribution to prevent unwanted
+discrepancies in ND set satisfaction. For smaller domain sizes a
+normal distribution in random relations would often lead to relations
+satisfying FD sets with few steps to absorption as there are likely to
+be fewer partitions on attributes on the left hand side of the FDs and
+fewer differences between attributes values on the right hand side of the FDs.
+
+
+\subsection{Use of Random Number Generation}\label{subsec:imp_note}
+
+A number of algorithms in this thesis use randomised techniques. To
+circumvent any potential problems with non-random behaviour we used
+a linear congruent procedure taken
+from the algorithm provided by Park and Miller \cite{pm88} which
+avoids cycles by incorporating multiplier and modulus
+having 534 million full period generators. 
+ 
+\subsection{C++ libraries}
+
+The program, a direct implementation of Algorithm~\ref{alg:iter},
+ was written in C++ with the embedded CORAL deductive
+database C++ interface to manipulate the relations. Each randomly
+generated relation was created and stored as a database in CORAL.
+\smallskip
+
+Via the C++ interface in CORAL, using functional and numerical dependency
+classes and a partition class for the tuples, the relation 
+ is then mutated according
+to the uniform random selections made in the algorithm. C++ with
+embedded CORAL was also used for assessing the quality of
+the relations after evolution, the knowledge discovery component
+of our system.
+
+\section{Simulation Details: The Consistency
+Problem}\label{sec:sim_conprob}
+
+For this work we concentrated on 12 FD sets, detailed in
+Appendix~\ref{app:con_prob} and Chapter~\ref{chap:consistency}. Again,
+for
+coverage these were demarcated in BCNF and non-BCNF sets. Our
+simulation details are presented in Table~\ref{table:simpar}. The 12
+FD sets range from containing a small to a significant number of
+dependencies, 8 of which are presented in
+Table~\ref{tbl:fd_set_used}. Those FDs not discussed directly within
+the text provided results subsumed by those FD sets which are
+presented. 
+
+\medskip
+For each domain, tuple and maximum indefinite-cell arity we ran a
+batch containing 500 runs. A batch was run for both naive and the
+chase and hill-climbing instances of the program. Again these batches
+allowed us to infer acceptable mean behavior for each input
+combination.
+
+\medskip
+
+\subsection{Indefinite Information Data}\label{subsec:ind_inf}
+
+The lack of availability of real-world data containing indefinate
+information dictated our use of randomly generated data. Though there
+are cases, as we have seen in Chapter~\ref{chap:consistency}, where it
+would be useful to represent disjunction within cells, current
+RDBMS systems do not generally support anything more than the ability
+to store NULL values. This also applies to deductive databases, as
+experienced by our use of the CORAL deductive database. Due to this 
+we chose to conduct our experiments on randomly generated relations
+with a uniform distribution of values across a given domain size.
+
+Further simulations were conducted where attributes on the left hand
+side or right hand side of FDs were specified as containing indefinite
+cells with either a low, medium, or high probability of containing
+indefinite information, as detailed in
+Table~\ref{table:spar_range}. This allowed us to study the behaviour
+of indefinite information in sparsely generated random relations,
+sparsity being elaborated upon in Definition~\ref{def:spar}. 
+This direct control over the presence of indefinacy within a randomly
+generated relation created with a uniformly random distribution was
+preferable to that of a random relation created with a normal
+distribution, giving us direct control over the relationship between
+indefinacy in cells and their appearance in either the left or right
+hand side of an FD.
+
+{\line
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|l|l|} \hline 
+\multicolumn{2}{|c|} {\bf Sparsity} \\ \hline
+{\sc low} & 25\% probability of indefinite cell \\ 
+{\sc medium} & 50\% probability of indefinite cell  \\ 
+{\sc high}  & 75\% probability of indefinite cell \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{table:spar_range} Depicting the range of indefinite cells in a relation}
+\end{table}
+}
+
+\begin{definition}[Sparsity]\label{def:spar}
+\begin{rm}
+Sparsity is defined to be the fraction of indefinite cells within a 
+relation. If relation $R$ has $m$ tuples and $n$ attributes such that it
+is of size $m$ x $n$ and there are $k$ indefinite cells in the relation then
+its sparsity is $\frac{k}{mn}$. For example a relation with 20 tuples
+and 5 attributes will have a low, medium, or high sparsity with 
+25, 50, and 75 indefinite cells respectively. $\quad\Box$
+\end{rm}
+\end{definition}
+
+ 
+
+\subsection{A note on randomly generated relations}
+
+The use of randomly generated relations places a limit on the size of
+the relations which we can use. For example, as shown in
+Table~\ref{table:simpar}, we restricted relation size to 50
+tuples. Though this is small given the requirement of a fixed domain
+size any increase in relation size is likely to lead to all randomly
+created relations satisfying the given FDs as NDs with the branching
+factor equivalent to the domain size in all possible worlds. 
+
+\medskip
+
+We stress that though these relations are small there is generally a
+significant number of possible worlds to select from.  In a randomly
+generated relation with each cell having a 50\% chance of being
+indefinite, far higher than likely in the real world, a relation with
+50 tuples, 4 attributes and a maximum indefinite cell size of 4 has a
+maximum $4^{50.4}$ possible worlds.  A much larger relation, say with
+1,000 or 10,000 tuples but with only 20 indefinite cells, none with more
+than 4 items in any indefinite cell, would have $4^{20}$ possible
+worlds. Larger relations in such a case would not have been any more
+comprehensive with regard to results concerning our use of the
+bootstrap. 
+
+\subsection{Bootstrap Parameter Size Selection}
+
+The Bootstrap Replication Size (BRS), $B$, is the number of times we
+resample from a sample. As discussed in Section~\ref{subsec:boot_proc}
+we restate, from \cite{et86}, that there is {\em little improvement}
+setting $B$ above 100. We decided to conduct a number of tests with
+$B$ starting at 25 and approximately increasing $B$ by a factor of 2
+until we reached $B$ = 10,000 on relations. Our tests on a suitable BRS
+were conducted on two relations presented together in
+Table~\ref{table:brs_testset} with Attribute A as the only left hand
+side for the FDs guaranteeing FD violation. These relations contain
+every cell as 
+indefinite implying that the variance within each resample would be
+much higher than for usual implying that our conclusions on a suitable
+BRS would be robust for a randomly generated relation. Empirical
+results allowed us to conclude that setting $B$ = 100 would provide
+reliable resampling results. Figure~\ref{graph:histo2} emphasises the
+minimal difference in variance between 500 and 10000 resamples; a
+similar result was also found for 100 resamples.
+
+
+{\line
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|} \hline 
+ {A } & {\bf B$_1$ } & { \bf B$_2$  } & {\bf $\ldots$ } & {\bf B$_{n-1}$} & { \bf B$_n$ } \\ \hline
+$[2,3]$	& $[1,2,3]$ & $[1,2,3]$  & $\ldots$ &  $[1,2,3]$ & $[1,2,3]$ \\
+$[2,3]$	& $[4,5,3]$ & $[4,5,3]$  & $\ldots$ &  $[4,5,3]$ & $[4,5,3]$ \\
+$\vdots$	& $\vdots$ & $\vdots$  & $\vdots$ &   $\vdots$ & $\vdots$ \\
+$[2,3]$	& $[n_{m-3},n_{m-2},3]$ & $[n_{m-3},n_{m-2},3]$  & $\ldots$ &  $[n_{m-3},n_{m-2},3]$ & $[n_{m-3},n_{m-2},3]$ \\
+$[2,3]$		& $[n_{m-1},n_m,3]$ & $[n_{m-1},n_m,3]$  & $\ldots$ &  $[n_{m-1},n_m,3]$ & $[n_{m-1},n_m,3]$ \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{table:brs_testset} Indefinite relations $r_1$ with 10 tuples when $m = 21$ and $r_2$ with
+20 tuples and $m = 41$}
+\end{table}
+}
+
+
+\subsection{Use of the Original Sample and Fixpoint Selection}
+
+We experimented with 
+using the original indefinite 
+relation for each resampling iteration from which $n$ possible worlds are
+sampled each time. The variance is much higher in this case as we
+have all possible worlds to select from for each sample of size
+$n$. These experiments were conducted on 5 batches for different
+domain, tuple and indefinite cell-arity combinations.
+
+\medskip
+
+Initially we experimented with using our dynamic resampling algorithm,
+WORLD\_LIMIT, with different degrees of approximate equality for out
+statistical estimators (standard deviation, variance). We found that 1
+decimal place to provide too many {\em false} convergence results,
+though the averages within a batch were similar to those for 2 decimal
+places. We chose to use 2 decimal places as our degree of
+approximation in these tests.
+
+
+\subsection{Using the Bootstrap to determine confidence intervals}
+
+Based on the values generated by the Bootstrap samples we 
+used the generally accepted assumption that as the Bootstrap
+replication size increases the 
+sampling approximates a normal distribution and so we can actually
+determine the confidence intervals empirically, shown to converge for
+a relation in Figure~\ref{graph:conlim}. For example to find the
+95\% confidence intervals we determine what the values of the 
+parameter of interest are within the ordered $B$ Bootstrap samples at the
+25th and 975th points for the replications with $B$ = 1000. The extra
+information provided by confidence intervals for a sample implies that
+they need more computational effort, as remarked in \cite{et93}. 
+
+The bootstrap could also be used to find the distribution of {\em good}
+approximations to the FD set.
+An example of this may be that
+NDs such as $AB \to^3 CD$ are found in the $\bar{s}(\tilde{p}^\star_b) + 2.\hat{se}_B$ to
+$\bar{s}(\tilde{p}^\star_b) + 3.\hat{se}_B$ 
+ range of the distribution  which contains 2.1\% of a normal
+distribution, and are therefore considered {\em good} for the
+indefinite relation in question.
+In this case it will be unlikely to achieve anything better other
+than by an exhaustive search which is impossible. Possible problems 
+associated with this are that it is too naive to tell us anything
+when there may be very few {\em good} approximations such as in
+$r_2$, shown in Table~\ref{table:brs_testset}. We chose not to apply this technique.
+
+\medskip
+
+Alternatively we can use the standard error for the Bootstrapped
+sample to assign approximate confidence intervals given the
+bootstrapped estimate of standard error $\hat{se}_B$ and the bootstrapped variance $\hat{\theta}$ 
+whilst assuming a normal distribution.  For example, we determine a 95\% 
+confidence interval as $\hat{\theta} \pm 1.960 \cdot \hat{se}_B$.
+
+\subsection{Jackknife and Bootstrap Resampling}
+
+For 3 FDs an additional batch of simulations were run, using
+jackknife resampling in addition to bootstrap resampling for 10
+different domain/tuple/indefinite-cell arity combinations. We enforced
+that each step of resampling would have the same original sample in
+each case for more comprehensive comparisons. The only difference was
+that for jackknife resampling our statistical estimators would be
+based on $n$ resamples for a sample of size $n$ and for 100 resamples
+for bootstrapped resamples. This implied that whenever the number of
+worlds in a sample exceeded one hundred in our algorithm,
+WORLD\_LIMIT, that the bootstrap became more computationally
+efficient.
+
+\section{Simulation Details: Numerical Dependency Temporal
+Logic}\label{sec:sim_ndltl}
+
+For our simulations on property discovery we used real world data
+downloaded from the following sources:
+
+\begin{itemize}
+\item Statlib, a data set resource, \ttb http://lib.stat.cmu.edu\tte
+\item Financial Data sets are available in the public domain from a
+number of sources, we cite \ttb http://www.market-eye.co.uk \tte and
+\ttb http://www.moneyworld.co.uk \tte
+\end{itemize}
+
+We implemented our objects within template classes in
+C++ using the classes for functional and numerical dependencies
+created for our work on evolving relations and the consistency
+problem. 
+A sequence object (class) was created to hold the temporal sequence
+data. This was 
+implemented as a template in C++ to allow data independence. 
+This object contained the required time series function values which
+would allow us to difference and create moving averages of the time
+series. Additionally it 
+included a
+sign for the trend, initial and maximum values within the sequence.  
+Moving Block procedures were also implemented upon this object.
+Statistical functions such as correlations, variance and
+covariance were also implemented in this class. 
+These time series functions were verified for correctness via
+testing and comparison of results presented in \cite{ko90}.
+Based on the results of our procedures we are able to add the modal
+operators $\bm^n$ and \diam$^n$ to a sequence so that it may represent
+a potentially interesting property within our discovery model.
+
+
+\subsection{Sequence Size Selection}
+
+Input was a Time Series and two sequence sizes.  Given
+Theorem~\ref{theorem:pt_logic} we know 
+that for fixed small and large sequence sizes the discovery of properties
+can be achieved in polynomial time.
+
+We conducted our experiments with a small sequence size $n$ and
+large sequence size $2n$. We increased $n$ by a factor of 2 until it
+was considered too large to provide meaningful results with respect to
+the sequence size at hand, when $n$ is over half the size of the
+complete temporal relation sequence implying that all sequences
+overlap by at least one point, discussed in
+Section~\ref{sec:tr_real_analysis}. 
+
+\medskip
+
+
+Often we changed the sequence sizes based upon the presence or absence
+of response and persistence rules as discussed in
+Section~\ref{sec:tr_crit_an}. When the small sequence size $n$ is much
+smaller than the large sequence size $m$ then we are unlikely to find
+a response rule and if they are nearly the same size we are guaranteed
+to find one due to overlapping of sequences. A similar criteria holds
+for persistence rules. We found our use of 1:2 as an initial ratio to
+provide interesting results, though we freely changed this when
+results from simulations suggested so. This highlights the interactive
+nature of these simulations, stressed in much data mining research. 
+
+
+\subsection{Moving Average and Moving Block Size Selection}
+
+Moving Averages ranged from 3 to 10 as our simulation shows. This was
+to avoid excessive smoothing with a temporal relation sequence.
+
+\smallskip
+
+Experiments were conducted on a range of different moving block
+sizes. These were arbitrary choices based on our goal to obtain
+resampled sequences which preserved relationships within the
+blocks. The choice of block size in our use of the moving block
+bootstrap for large relations depended on our goal of whether we are
+seeking to discover properties relating to either grouping of short
+ranges or over a {\em synopsis} of the original sequence. Short range
+behaviour will be found if we select fewer blocks of a larger size
+whilst long range behaviour is found by selecting more blocks of a
+smaller size with respect to the size of the original temporal
+relation sequence. 
+
+
+
+
+
+
+
+

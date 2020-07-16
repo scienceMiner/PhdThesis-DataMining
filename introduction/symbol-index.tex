@@ -1,0 +1,83 @@
+%\chapter*{Symbol Index}\label{chap:symbol}
+    
+\begin{symbolindex}
+
+{\renewcommand{\baselinestretch}{1}
+\small\normalsize
+\begin{tabbing}
+\hspace*{4cm}\=\kill \\
+{\bf Symbol} \>        {\bf Meaning}\\
+\\
+X, Y, Z \> 		 sets of attribute names\\
+A, B, C \> 		 attribute names\\
+DOM(A) \>  		 the domain of an attribute A\\
+$R$ \>   		 the set of attribute names in relation $R$ \\
+r($R$) \>  	         a relation r defined over attributes $R$ \\
+
+$t$ \>    		 a tuple $t$ in a relation\\
+$t[$X$]$ \>  		 the projection of a tuple t onto a set of attributes X\\
+$\pi_{\mbox{\small{X}}}(r)$ \> 		 the projection of a relation r onto a set of
+attributes X\\
+$r[$X, $x]$ \>		 partition of a relation $r$ whose X value is $x$ \\
+X $\to$ Y \> 	   	 X functionally determines Y\\
+X $\to^k$ Y \> 	   	 X numerically determines up to $k$ different
+Y values\\
+$r$ $\models$ $\sigma$ \>  	 $r$ logically implies $\sigma$ \\
+$r$ $\not \models$ $\sigma$ \>   $r$ does not logically imply $\sigma$ \\
+$r$ $\weak$ $\sigma$ \>   indefinite relation $r$ logically implies $\sigma$ \\
+$\Sigma$ \>  		 a set of data dependencies\\
+$\Sigma^+$ \>		   the set of dependencies logically implied by $\Sigma$\\
+SAT($\Sigma$) \>	 the set of all relations which satisfy $\Sigma$ \\
+ATT(d)  \> 		  the set of attributes appearing in an FD, denoted by d \\
+$\equiv$        \>   	logical equivalence \\
+X$^+$   \>   		the  closure of the set of attributes X \\
+DEP(X)  \>   		 the dependency  basis of X \\
+$\mid$ X $\to$ Y $\mid$\>   the {\em size} of an FD  X $\to$ Y \\
+$\|$ F $\|$\>   the sum of all the sizes of all the FDs in F \\
+ FD \>			Functional Dependency \\
+ ND \>			Numerical Dependency \\
+ AR \>			Armstrong Relation \\
+ (R)DBMS \>		(Relational) Database Management System \\
+ ADS \>			Active Domain Size \\
+ $\top$ \>		the top of a lattice \\
+ $\bot$ \>		the bottom of a lattice \\
+ $\mid S \mid$ \>	the cardinality of a set $S$ \\
+ ${\mathcal P}(S)$ \>	the powerset of a set $S$ \\
+ $n!$ \>		the factorial of $n$  \\
+ $\forall$ \>		universal quantification  \\
+ $\exists$ \>		existential quantification  \\
+$\Diamond \sigma$ \>	at some point in the future $\sigma$ \\	
+$\Box \sigma$ \>	at all points in the future $\sigma$ \\	
+$\bigcirc \sigma$ \>	at the next point in the future $\sigma$ \\	
+$\sigma_1 {\cal U} \sigma_2$ \>	$\sigma_1$  until  $\sigma_2$ \\	
+$\sigma_1 {\cal S} \sigma_2$ \>	$\sigma_1$  since  $\sigma_2$ \\	
+$\Delta$ \>		temporal relation sequence or temporal database \\
+$s \preceq \Delta$  \>	sequence $s$ is contained in $\Delta$	\\
+$s1 \lessdot s2$  \>	$s1$ starts before $s2$ and $s2$ ends after $s1$  \\
+$s1 \gtrdot s2$  \>	$s2$ starts before $s1$ and $s1$ ends after $s2$ \\
+($\Delta$, $r$) $\models^w \sigma$ \>	relation $r$ in 
+$\Delta$ satisfies $\sigma$ over a moving average window of size $w$	\\
+($\Delta$, $s$) $\models^w \sigma$ \>	sequence $r$ in
+$\Delta$ satisfies $\sigma$ over a moving average window of size $w$	\\
+$\bm^n \sigma$\>	all sequences of size $n$ satisfy $\sigma$  \\
+\diam$^m \sigma$ \>	some sequence of size $n$ satisfies $\sigma$ \\
+\pers{n}{m} $\sigma$  \>	some sequence of size $n$ satisfies
+$\bm^m$$\sigma$, where $m \le n$ \\
+\resp{n}{m} $\sigma$ \>		all sequences of size $n$ satisfy
+\diam$^m$ $\sigma$,
+where $m \le n$ \\
+$\sigma_1 \leadsto \sigma_2 $ \>  A sequence, say $s1$, satisfying $\sigma_1$,
+starts before a sequence, say $s2$,  \\
+\>			satisfying $\sigma_2$, and $s2$ ends after $s1$ \\
+$\sigma_1 \wedge^k \sigma_2$  \> A sequence satisfies $\sigma_1$ and
+$\sigma_2$ and there is a maximum correlation \\
+	\>		with lag value $k$  \\
+
+
+\end{tabbing}
+
+}
+
+
+\end{symbolindex}
+

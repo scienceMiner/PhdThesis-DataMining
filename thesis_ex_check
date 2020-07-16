@@ -1,0 +1,31 @@
+# check word in all thesis chapters
+ 
+ 
+cd introduction
+grep 'example~\\' introduction.tex
+cd ..
+
+cd review
+grep 'example~\\' review.tex
+cd ..
+
+cd numdep
+grep 'example~\\' numdep.tex
+cd ..
+
+cd consistency
+grep 'example~\\' consist.tex
+cd ..
+
+cd templog
+grep 'example~\\' templog.tex
+cd ..
+
+cd tempresult
+grep 'example~\\' tempresult.tex
+cd ..
+
+cd conclusion
+grep 'example~\\' conclusion.tex
+cd ..
+

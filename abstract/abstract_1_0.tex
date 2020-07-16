@@ -1,0 +1,42 @@
+\begin{abstract}
+
+We propose that data mining, the search for useful,
+non-trivial and previously unknown information within a database,
+can be successfully performed using Numerical Dependencies (NDs), a
+generalisation of Functional Dependencies (FDs), and Resampling, a
+computationally intensive statistical sampling process that allows us
+to make inferences about temporal and indefinite databases.
+
+\medskip
+
+We show how NDs are applicable in relations containing
+temporal and indefinite information. We extend the theory of NDs
+by presenting measures for data mining and define the chase
+procedure, a method for updating a relation to satisfy a constraint
+set, for NDs and motivate NDs in real-world applications by introducing
+an evolutionary database design tool. The Consistency
+Problem, that of attempting to find a relation satisfying a set of FDs
+within an indefinite relation, known to be
+NP-Complete, is studied. We provide an approximation methodology
+using NDs and Resampling, based on taking samples of definite
+relations from indefinite ones. We employ resampling on incremental
+sample sizes until an approximate fixpoint is
+reached, denoting an upper bound on the required sample
+size. Extensive simulations highlight that the process of resampling
+to find upper bounds in conjunction with the chase for
+indefinite relations returns valid approximate solutions.
+
+\medskip
+
+We also study NDs in temporal sequences of relations for knowledge
+discovery purposes. Each relation
+within a sequence satisfies a set of NDs. We introduce a logic for the
+discovery of rules and properties within these sequences, or
+subsequences, which
+include statistical functions within the temporal operators for
+correlation analysis. We apply discovery algorithms to both
+sequences and resampled sequences, allowing smoothing for trend
+detection. Investigations, presented herein, show these rules to
+provide interesting and practicable results.
+\end{abstract}
+

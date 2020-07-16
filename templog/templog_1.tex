@@ -1,0 +1,944 @@
+\chapter{Temporal Data Mining for Temporal Property
+Detection}\label{chap:templog}
+
+In this chapter we introduce a temporal logic based upon sequences
+with NDs, possibly containing time series functions, for temporal data
+mining purposes. We show how temporal properties may be formalised
+within this logic and used for temporal data mining.
+\smallskip
+
+In section~\ref{sec:tl_intro} we introduce and motivate this
+work, stating why we focus on NDs. Section~\ref{sec:tl_why} follows
+with a discussion of why
+properties are useful for temporal data mining, focusing on the
+ability to succinctly characterise temporal behaviour. In
+section~\ref{sec:tl_nd} we briefly present NDs in a temporal database
+and follow this in section~\ref{sec:tl_tsa} with a presentation of
+time series analysis. We provide this for two reasons. Principally
+because our logic uses some time series analysis functions and
+secondly as a comparison between our work and a standard time series
+analysis that may be performed on a temporal database, noting that NDs
+in a temporal database may be viewed as time series. In the next
+chapter we shall see some results from applying our logic for temporal
+property discovery just to time series.  Section~\ref{sec:tl_relations}
+provides a introduction to temporal sequences upon which our logic is
+based. In section~\ref{sec:tl_ndltl} we formally define our temporal
+logic. Finally, in section~\ref{sec:tl_properties} we define some temporal
+properties and discuss the intuition behind attempting to discover
+these properties from a temporal database. We conclude with a
+discussion of the open problems that remain in~\ref{sec:tl_disc}.
+
+\section{Introduction}\label{sec:tl_intro}
+
+In Temporal Databases we
+may view each state at time point $t$ as a snapshot of the database. 
+Over a series of time points, taken at fixed intervals, each snapshot 
+may satisfy changing
+ND sets which may model temporal relationships previously unknown to
+the database user. We assume the time intervals are fixed for clarity
+within the discovery process though it would be feasible to unfold
+time points over disparate intervals into a fixed representation.
+
+\medskip
+
+The sets of points satisfied by the ND sets across time form a time
+series. We introduce in section~\ref{sec:tl_ndltl} a temporal logic of
+sequences to model aspects of
+time series statistics and present them as ``properties'' of the
+temporal database. These properties are extended from the temporal
+logic properties of safety, implying at all future points, and
+guarantee, implying at some point in the future, to implying all
+subsequences of size $n$ and some subsequence of size $n$, respectively.  
+In this way we use these properties to characterise
+the temporal database with such statements as, for example, ``all
+sequences of 100 days contain, at some point, a downward trend of 30
+days.'' The expression of these properties within a succinct logical
+form allows for both the discovery of new knowledge and the machine
+understandable form of well understood behaviour within the temporal
+database. This has applications both in knowledge discovery and
+decision support. We do however stress that properties discovered may
+require expert examination for validation as a contribution to
+knowledge. This is a key point for all knowledge discovery systems \cite{fps96,man97}.
+\smallskip
+
+We show how our logic may be applied to study time series for
+property discovery. In chapter~\ref{chap:tempresult} we give examples
+of properties found in temporal
+datasets which may be viewed as temporal relations. We also provide
+results showing interesting properties
+discovered on stocks within the FTSE 100 over different
+time periods. Additionally, we make use of the resampling technique
+known as the moving blocks bootstrap. From an input time series we
+randomly sample blocks, or in this case sequences of a size $n$, and
+append the sequences to the resampled series as they are selected
+until we have a resampled series of equivalent length to the original
+series.  
+The resampling destroys long term relationships whilst preserving
+relationships of a size less than $n$, allowing us to
+look for short range properties which may hold in various time series.
+We apply our property discovery
+algorithms to these and the original sequences and provide examples of
+interesting,
+useful and previously unknown properties which hold, satisfying all of
+the criteria for successful knowledge discovery. We conclude in
+section~\ref{sec:tl_disc} with a
+discussion proposing the inclusion of these techniques into DBMS.
+
+\section{Why do we need properties for Temporal Data Mining?}\label{sec:tl_why}
+\index{Rule Discovery}
+\index{Events}
+
+There has been much work on properties holding in temporal logic, upon
+which the seeds of this work lie, most notably \cite{mp92}. Properties
+in temporal logic have arisen out of the application of temporal logic
+to computing. Transition rules in a program allow for properties to be
+specified. For example, the standard notation would use $\Box p \to
+\Diamond q$ to denote that at all future points p holds ($\Box p$)
+which implies
+that at some point in the future q holds ($\Diamond q$) and this is
+referred to as a
+{\em response to insistence} property. We redefine connectives and
+properties in
+our logic so that we may discover various forms of response and
+persistence rules for temporal sequences. We define a response rule as
+\resp{n}{m} $\sigma$ which imply that all subsequences
+of size $n$ contain a sequence of size $m$ which satisfies $\sigma$, and a
+persistence rule as \pers{n}{m} $\sigma$  
+stating that for a sequence of size $n$ all of its $m$ length subsequences
+satisfy $\sigma$.
+The contribution of this work is the use of property discovery in a
+temporal logic relating to subsequences for discovering relationships
+about NDs, the atoms of our logic, in temporal databases.
+	
+\section{Numerical Dependencies in a Temporal Database}\label{sec:tl_nd}
+
+In a Temporal Database each snapshot at a particular time may satisfy
+a set of NDs. We assume that the ND set is specified via an attribute
+set template provided by the database user, though we note that it is
+possible to ``mine'' the relation for NDs blindly as detailed in section~\ref{sec:nd_datamine}.
+
+
+\section{Temporal Relations}\label{sec:tl_relations}
+
+
+\begin{definition}[Temporal Relation Sequence]
+\begin{rm}
+A {\em relation sequence} $\Delta$ over R is a finite set of
+relations over R with $\Delta$ = $\{ r_0, r_1, \ldots, r_n \}$,
+indexed chronologically $0, 1, \ldots, n$ from an initial point 0 and
+having a final point $n$, each state corresponding to a time point a
+fixed interval apart from its previous and next value.
+\end{rm}
+\end{definition}
+
+We assume that our temporal database (sequence) is a collection of
+relations which are linearly ordered. As such we infer within our
+logic that time itself is linearly-ordered.
+
+\subsection{Sequences of Temporal Relations}
+\index{Temporal Sequences}
+\index{Sequences|see{Temporal Sequences}}
+
+
+\section{Time Series Analysis and Numerical Dependencies}\label{sec:tl_tsa}
+
+\subsection{Viewing our model as a Time Series}
+
+
+The simple example in tables~\ref{tab:1} and~\ref{tab:2} for
+a relation $COLLEGE(C,S,T)$ over two years where $C$, $S$, and $T$
+represent course, student and tutor, respectively, highlights possible
+transition in a temporal database. The change in ND set satisfaction
+for the ND set = $\{ C \to^k S, C \to^k T \}$ from $\{ C \to^3 S, C \to^2 T \}$
+to $\{ C \to^4 S, C \to^1 T \}$ may be an indicator of both increasing
+student numbers on courses whilst at the same time implying that
+tutors have more work to do on a course. This information could be
+represented in a single relation if timestamps were attached to each
+tuple.
+
+{\line
+\begin{table}[ht]
+\begin{minipage}[b]{8cm}
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline
+ C & S & T \\ \hline
+ b11a & Paul & Mark \\ 
+ b11a & Tina & Mark \\
+ b11a & Fred & Robin \\
+ b151 & Paul & Robin \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{tab:1} 1997 student intake records}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{8cm}
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline
+ C & S & T \\ \hline
+ b11a & Tom & Mark \\
+ b11a & Dan & Mark \\
+ b11a & Louise & Mark \\
+ b11a & Jim & Mark \\
+ b151 & Jim & Robin \\ 
+ b151 & Jose & Robin \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{tab:2} 1998 student intake records}
+\end{minipage}
+\end{table}
+}
+
+
+Clearly, the change in ND set satisfaction may be viewed as a
+time series. For examples, $C \to^{16} S$, $C \to^{20} S$, $C \to^{27} S$ may
+be viewed as a time series of points $16,20,27$ assuming a fixed time
+interval between insertion.
+
+
+\section{Time Series Analysis}\label{sec:tsa}
+
+We now provide a brief overview of time series analysis. In
+section~\ref{subsec:tl_tsabasic} we discuss research on time series
+analysis and emphasise areas which our work may be considered an
+contributory to. Then in section~\ref{subsec:tl_tsadefs} we provide
+definitions of standard functions used within linear time series
+analysis which are embedded within our logic.
+
+\subsection{Time Series Analysis: Basics}\label{subsec:tl_tsabasic}
+
+The goal of time series analysis is to model an observed system so
+that its future behaviour may be predicted \cite{wg94}. We discuss
+both traditional time series analysis and new techniques, such as the
+use of neural networks, and then relate this to our work. Having read
+this section the reader will fully appreciate the statistical
+functionality we incorporate into our logic, presented in
+section~\ref{sec:ndltl}. We assume familiarity with the statistical
+functions, such as variance, covariance, correlation, autocorrelation
+etc. For completeness we present them in Appendix~\ref{sec:timedefs}.
+
+\medskip
+
+The standard methodology for analysing a time series is to decompose
+the series into trend, seasonal and irregular components, each of
+which may be expressed as individual functions of time. \cite{wg94}
+demarcates the difference between understanding and learning from a
+time series as that of applying explicit mathematical insight from using
+learning algorithms to emulate the behaviour of the time series. Our
+goal is closer in spirit to understanding the sequence, using
+properties to achieve this. For linear and stationary time series one
+of the most popular techniques is to create an autoregressive (AR) model,
+of the following form for the Mth order AR model, where the first $p$
+autocorrelations determine the coefficients \cite{end95}:
+
+\begin{displaymath}
+x_t = \sum_{m=1}^M a_m x_{t-m} + e_t
+\end{displaymath}
+where $e_t$ represents noise and the $a_m$ the autoregressive
+coefficients for $x_t$ on $x_{t-1}, x_{t-2}, \ldots, x_{t-m}$. $e_t$
+is assumed to have expectation 0 and is independent of previous
+values. Moving Average (MA) models can also be characterised by
+autocorrelation coefficients describing how values $\tau$ steps apart
+co-vary with each other. \cite{ko90} remark that autocorrelation
+coefficients for large lags are unreliable for model
+identification. We found this to be true within our logical
+representation and adopted their advice of restricting lags of a time
+series of $n$ points up to $\frac{n}{4}$. This seemed to be a sensible
+restriction across all time series sizes, given that the reliability
+of the lag values increases at higher values and that we are using
+sequence representation.
+
+\medskip
+
+AR and MA models may themselves be combined to form ARIMA models.
+We omit a full discussion of model selection,
+provided in
+\cite{ko90,end95}, suffice to say that ARIMA models have had the
+greatest impact on linear time series analysis. Other aspects of time
+series analysis are the Yule-Walker equations which allow the
+autocorrelation coefficients of a time series to be expressed by
+autoregressive coefficients. The is simply understood given their
+definitions; see \cite{ko90}. The restriction of analysis methods to
+linear time series may cause problems. Two approaches to combat this
+are:
+\begin{enumerate}
+\item Approximating a system with more than one linear model, known as
+local linear modelling. \cite{wg94} state that many regions must be
+selected if the nonlinearity is of a quadratic degree or greater.
+\item The use of differencing to remove trend. \cite{naze88,end95}
+comment that most nonstationary time series can be changed to
+stationary time series by differencing once or twice. Given a series
+\series{n} we obtain the first and second differenced series by 
+$y_2 - y_1, y_3 - y_2, \ldots, y_n - y_{n-1}$ and 
+$y_3 - 2y_2 + y_1, y_4 - 2y_3 + y_2, \ldots, y_n - 2y_{n-1} +
+y_{n-2}$, respectively. \cite{naze88} comments that most economic time
+series are stationary after at most second order differencing.
+\end{enumerate}
+
+Our logic incorporates aspects of local linear modelling by breaking a
+time series into sequences which may then be linearly regressed within
+the sequence and we also allow differencing within our
+logic. \cite{naze88} states that ``the best practical approach in
+examining a series is visual examination of the plot of the series.''
+It is a key intention of this work to provide a definite contribution
+to any visual examination of a time series.  
+
+\medskip
+
+Nonlinear time series have most recently been the subject of analysis
+by neural networks. \cite{wg94} emphasises the importance of
+differentiating between learning for model discovery and simple
+memorisation. The latter occurs when the data is overfitted and
+prediction relies too heavily on previous values (including noise)
+rather that looking for a model. The complexities of non-linear time
+series analysis are outside the remit of this work. We believe that
+the application of sequences to differenced (and/or moving averaged)
+time series implies that our
+procedure can still obtain meaningful properties from such non-linear series.
+
+\subsection{Time Series Analysis: Definitions}\label{subsec:tl_tsadefs}
+\index{Time Series Analysis}
+
+
+
+\begin{definition}[Variance]\label{def:var}
+\begin{rm}
+Given a time series $x$ of length $n$, its variance is written as
+$var(x)$ where
+\[
+var(x) = \frac{1}{n-1} \sum_i^n (x_i - \mu)^2
+\]
+We assume that the series is stationary having a mean value $\mu$
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[Standard Deviation]\label{def:sd}
+\begin{rm}
+Given a time series $x$ its standard deviation is $\sigma_x$ where 
+\[
+\sigma_x = \sqrt{var(x)}
+\]
+\end{rm}
+\end{definition}
+
+\begin{definition}[Covariance]\label{def:covar}
+\begin{rm}
+Given two time series $x$ and $y$, both of length $n$, their
+covariance is written as $cov(x,y)$ where
+\[
+cov(x,y) = \frac{1}{n} \sum_i^n (x_i - \mu_x) (y_i - \mu_y)
+\]
+We assume that the series $x$ and $y$ are stationary with mean values
+$\mu_x$ and $\mu_y$, respectively.
+\end{rm}
+\end{definition}
+
+Covariance is a measure of the linear association between two variables.
+The strength of the relationship unfortunately depends on the unit of
+measurement used and so to avoid this we introduce the correlation
+coefficient.
+
+\begin{definition}[Correlation Coefficient]\label{def:correl}
+\begin{rm}
+Given two time series $x$ and $y$ the correlation coefficient
+$cor(x,y)$ is
+\[
+cor(x,y) = \frac{cov(x,y)}{\sigma_x \sigma_y}
+\]
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[Regression Coefficient]\label{def:regcoef}
+\begin{rm}
+Given a time series $x$, the regression coefficient
+$reg(x)$ is
+\[
+reg(x) = \frac{cov(x,y)}{\sigma_y}
+\]
+where y represents time.
+\end{rm}
+\end{definition}
+
+We note that regression is equivalent to the correlation but without
+the standard deviation of $x$ in the denominator. Therefore, unlike
+regression, 
+correlation does not make a distinction between the y-value and the
+value upon which it is regressed, in our case time.
+
+\begin{definition}[Discordance Test]\label{def:disccoef}
+\begin{rm}
+Given a time series \series{n}, we let
+\begin{eqnarray*}
+q_{ij} & = & 1, \quad\mbox{if}\quad y_i > y_j \quad\mbox{when}\quad j > i \\
+       & = & 0, \quad\mbox{otherwise}
+\end{eqnarray*}
+We define $Q$ as:
+\[
+Q = \sum \sum_{\!\!\!\!\!\!\!\!\!\!\!i < j} q_{ij}
+\]
+
+Now, this series is random under the null hypothesis and since there
+are $n$ points in the time series then there are $\frac{1}{2} n(n-1)$
+pairs and so the expected value of Q, E(Q) = $\frac{1}{4} n(n-1)$
+Our discordance function for a time series $y$ is:
+\begin{eqnarray*}
+discord(y) & = & 1,  \quad Q < E(Q) \\
+      	   & = & -1, \quad Q > E(Q) \\
+	   & = & 0,  \quad \mbox{otherwise} 
+\end{eqnarray*}
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[Autocovariance]\label{def:autocovar}
+\begin{rm}
+Given a time series $x$, of length $n$, its autocovariance of lag $k$
+(or lead $-k$) is written as $autocov(x,k)$ where
+\[
+autocov(x,k) = \frac{1}{m} \sum_i^m (x_i - \mu_x) (x_{i-k} -
+\mu_{x})\quad\mbox{where}\quad m = n-k 
+\]
+We assume that the series $x$ is stationary with mean value $\mu_x$.
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[Autocorrelation Coefficient]\label{def:autocorrel}
+\begin{rm}
+Given a time series $x$ the correlation coefficient $acor(x,k)$ is
+\[
+acor(x,k) = \frac{autocov(x,k)}{\sqrt{var(x)var(x-k)}}
+\]
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[Cross Covariance]\label{def:crosscovar}
+\begin{rm}
+Given two time series $x$ and $y$, both of length $n$, their
+cross covariance of lag $k$
+(or lead $-k$) is written as $ccov(x,y,k)$ where
+\[
+ccov(x,y,k) = \frac{1}{n} \sum_i^n (x_i - \mu_x) (y_{i-k} - \mu_y)
+\]
+We assume that the series $x$ and $y$ are stationary with mean values
+$\mu_x$ and $\mu_y$, respectively.
+\end{rm}
+\end{definition}
+ 
+ 
+\begin{definition}[Cross Correlation Coefficient]\label{def:crosscorrel}
+\begin{rm}
+Given two time series $x$ and $y$ the cross correlation coefficient $ccor(x,y,k)
+$ is
+\[
+ccor(x,y,k) = \frac{ccov(x,y,k)}{\sigma_x \sigma_y}
+\]
+\end{rm}
+\end{definition}
+
+
+\subsection{Catalytic Data Mining}
+
+
+\subsection{Advantages of a logical approach}
+	\index{Linear Temporal Logic|see{Numerical Dependency
+		LTL}}
+		\index{Temporal Logic}
+		\index{Modal Logic!see{Temporal Logic}}
+
+
+
+
+
+\section{Numerical Dependency Linear Temporal Logic}\label{sec:tl_ndltl}
+
+
+We now formalise our temporal logic for sequences which we refer to
+henceforth as NDLTL. Much of the intuition behind sequences follows
+from Allen's temporal intervals which we advise reading for a clear
+understanding of the use of intervals and sequences in time
+\cite{all84}.
+
+
+\subsection{Syntax}
+
+
+\begin{definition}[The inclusion operator, $\preceq$]
+\begin{rm}
+$s \preceq \Delta$ {\em iff} $\forall r_i \in s$ then $r_i \in \Delta$
+\end{rm}
+\end{definition}
+
+$s \preceq \Delta$ implies that $s$ is a subsequence of $\Delta$ and
+that $s$ contains a series of consecutive states.
+
+
+\begin{definition}[The Temporal Ordering operators, $\lessdot$ and $\gtrdot$]
+\begin{rm}
+$s_1 \lessdot s_2$ {\em iff} $\quad \exists r_j \in s_1$ such that $\forall r_k
+\in s_2 \quad j < k$ and $\exists r_p \in s_2$ such that $\forall r_m
+\in s_1 \quad p > m$. $\gtrdot$ is defined similarly.
+\end{rm}
+\end{definition}
+
+The intuition behind our temporal ordering operator is that a sequence
+comes before another sequence if at least one point in the sequence is
+before any in $s_2$ and $s_2$ has at least one point after $s_1$. In
+temporal ordering for sequences we do not want 
+sequences contained in other sequences to be classified as coming
+after though in time they do occur afterwards.
+
+
+We refer to a particular relation at state $j$ within a relation
+sequence $\Delta$ as $(\Delta,r_j)$. We refer to a subsequence $s$ of
+$\Delta$ ($s \preceq \Delta$) as ($\Delta$,$s$).
+$r_j$ is relation at point $j$ and $r_j \models N_j$, the set of
+NDs satisfied by $r_j$ and $N_j$ is an approximation to an FD set $F$
+which is given as input in our discovery model.  
+$\Delta$ may be omitted if the sequence is understood from the context.
+We may use $\Delta \models \sigma$ to represent ($\Delta$,$\Delta$)
+$\models \sigma$.
+
+
+
+The set of formulae of NDLTL is the
+least set generated by:
+\begin{enumerate}
+\item Each ND $X \to^{\mathcal{K}^\ast} Y$ or $X \to^{\updownarrow
+\mathcal{K}^\ast} Y$ is a formula where $\mathcal{K}^\ast \in \{ k,
+\bar{\mathcal{K}}, \breve{\mathcal{K}}, \uparrow\bar{\mathcal{K}},
+\downarrow\bar{\mathcal{K}}
+\ddot{\mathcal{K}},\uparrow_r\bar{\mathcal{K}},\downarrow_r\bar{\mathcal{K}},\uparrow_d\bar{\mathcal{K}},\downarrow_d\bar{\mathcal{K}}
+\}$  and $\updownarrow  \in \{ \uparrow,
+\downarrow, \uparrow_r,\downarrow_r,\uparrow_d\,\downarrow_d \}$
+\item If $\sigma_1$ and $\sigma_2$ are formulae then so are $\neg \sigma_1,
+\sigma_1 \wedge \sigma_2, \sigma_1 \wedge^k \sigma_2,   \sigma_1 \leadsto
+\sigma_2$. 
+\item If $\sigma$ is a formula then so are $\bm^m \sigma$ and  \diam$^m$ 
+$\sigma$
+\end{enumerate}
+
+
+
+
+\subsection{Semantics}
+
+
+\subsubsection{Relation State Formulae}
+\begin{enumerate}
+
+%% MOVING AVERAGE RULE
+
+\item\label{item:ma} ($\Delta$, $r_j$) $\models^w$ ($X
+\to^{\bar{\mathcal{K}}} Y$) { \em iff } $r_{j-m}$
+$\models X \to^{\mathcal{K}_1} Y$,  $r_{j-(m-1)}$
+$\models X \to^{\mathcal{K}_2} Y$, $\ldots$,  $r_{j}$
+$\models X \to^{\mathcal{K}_{m+1}} Y$,  $r_{j+1}$ 
+$\models X \to^{\mathcal{K}_{m+2}} Y$, $\ldots$,  $r_{j+m}$
+$\models X \to^{\mathcal{K}_n} Y$ where $m = \frac{w-1}{2}$, $w$ is odd
+and $\bar{\mathcal{K}} = \frac{1}{w} \sum_{i = 1}^{w} \mathcal{K}_i$
+and $j - m \ge 0$ and $j + m \le 0$
+
+\end{enumerate}
+
+This definition provides the moving average value for the branching
+factors of the NDs for relation state $j$. In the following the time
+series functions are defined in Appendix~\ref{sec:timedefs}.
+
+\subsubsection{Relation Subsequence Trend Formulae}
+
+\begin{enumerate}
+%% UPWARD TREND OF MOVING AVERAGES
+
+\item\label{item:ma_inc}($\Delta$, $s$) $\models^w$ ($X
+\to^{\uparrow\bar{\mathcal{K}}_1} Y$) { \em iff } $\mid s \mid \ge 2$ and $ \forall r_{j},r_{j+1} \in
+s$ ($\Delta$, $r_j$) 
+$\models^w X \to^{\bar{\mathcal{K}}_1} Y$ and ($\Delta$, $r_{j+1}$) 
+$\models^w X \to^{\bar{\mathcal{K}}_2} Y$ where $\bar{\mathcal{K}}_1 \le
+\bar{\mathcal{K}}_2$
+
+%% DOWNWARD TREND OF MOVING AVERAGES
+
+
+\item\label{item:ma_dec}($\Delta$, $s$) $\models^w$ ($X
+\to^{\downarrow\bar{\mathcal{K}}_1} Y$) { \em iff } $\mid s \mid \ge 2$ and $ \forall r_{j},r_{j+1} \in
+s$ ($\Delta$, $r_j$) 
+$\models^w X \to^{\bar{\mathcal{K}}_1} Y$ and ($\Delta$, $r_{j+1}$) 
+$\models^w X \to^{\bar{\mathcal{K}}_2} Y$ where $\bar{\mathcal{K}}_1 \ge
+\bar{\mathcal{K}}_2$
+
+%% UPWARD REGRESSION TREND 
+
+\item\label{item:reg_tren_up}($\Delta$, $s$) $\models^w$ ($X
+\to^{\uparrow_{r}\mathcal{K}} Y$) { \em iff } $\mid s \mid \ge 2$ and $\exists r_{j} \in
+s$ and $\neg\exists r_i \in s$ $i < j$ and 
+($\Delta$, $r_j$)  $\models^w X \to^{\mathcal{K}} Y$ and $reg(s) > 0$ 
+
+%% DOWNWARD REGRESSION TREND 
+
+\item\label{item:reg_tren_dn}($\Delta$, $s$) $\models^w$ ($X
+\to^{\downarrow_{r}\mathcal{K}} Y$) { \em iff } $\mid s \mid \ge 2$ and $\exists r_{j} \in
+s$ and $\neg\exists r_i \in s$ $i < j$ and 
+($\Delta$, $r_j$)  $\models^w X \to^{\mathcal{K}} Y$ and $reg(s) < 0$ 
+
+\end{enumerate}
+
+In definitions~\ref{item:reg_tren_up} and~\ref{item:reg_tren_dn} we
+can replace the trend operator $\uparrow_r$ with $\uparrow_d$ to
+represent that we have obtained the trend using the discordance
+method and not linear regression.
+
+\subsubsection{Relation Subsequence Formulae}
+
+\begin{enumerate}
+
+%% NEG  
+
+\item ($\Delta$, $s$) $\models \neg  \sigma_1$ {
+\em iff } ($\Delta$, $s$) $\not\models \sigma_1$ 
+
+
+%% STANDARD CONJUNCTION
+
+\item ($\Delta$, $s$) $\models \sigma_1 \wedge \sigma_2$ { \em iff }
+($\Delta$,$s$) 
+$\models \sigma_1$ and ($\Delta$,$s$) $\models \sigma_2$ 
+
+
+%% CORRELATED CONJUNCTION
+
+\item ($\Delta$, $s$) $\models \sigma_1 \wedge^k \sigma_2$ { \em iff }
+($\Delta$,$s$) 
+$\models \sigma_1$ and ($\Delta$,$s$) $\models \sigma_2$ and $k$ is
+the lag value for which the cross-correlation is maximum.
+
+%% LEADSTO 
+
+\item\label{item:leadsto} ($\Delta$, $s$) $\models \sigma_1 \leadsto \sigma_2$ { \em iff } ($s$,$s_1$)
+$\models \sigma_1$ and ($s$,$s_2$) $\models \sigma_2$ and $s_1,s_2 \preceq 
+s$ and $s_1 \lessdot s_2$
+
+
+
+%% ALL FIXED SUBSEQUENCE SIZES
+
+\item\label{item:fixed} ($\Delta$, $s$) $\models \bm^n \sigma_1$ { \em
+iff }
+$\forall s_i \preceq  s$ where $\mid s_i \mid = n$ and ($s$, $s_i$) $\models \sigma_1$
+
+
+
+%% SOME FUTURE POINT
+
+\item\label{item:guarantee} ($\Delta$, $s$) $\models$ \diam$^n$
+$\sigma_1$ { \em iff }
+$\exists s_i \preceq s$ where $\mid s_i \mid = n$ such that ($s$,
+$s_i$) $\models \sigma_1$
+
+\end{enumerate}
+
+We note in axiom~\ref{item:leadsto} that $s_1,s_2 \preceq 
+s$ do not have to cover every point in $s$.
+Within this logic it is possible to express formulae such as
+($\Delta$, $s$) $\models$ $\sigma_1
+\to$ \safe{n} $\sigma_2$, stating $\sigma_1$ holds in a sequence or
+it has a sequence of size $n$ which does not satisfy
+$\sigma_2$. We restrict our knowledge discovery process to
+search for positive information though a user might ask such queries.
+
+
+\subsection{Axioms of the logic}
+
+We note that
+\[
+\mbox{\diam}^n \sigma \equiv \neg \bm^n \neg \sigma
+\]
+is valid within our logic.
+
+\subsection{Querying our Logic}
+
+
+We now show by induction that any formulae $\sigma$ in the logic can be tested
+in polynomial time. Firstly, we present some lemmas which shall be of use
+in the proof.
+
+
+\begin{lemma}\label{lemma:subseq}
+\begin{rm}
+Given a sequence $s$ of $n$ relation states then $s$ has $\frac{1}{2}
+n(n+1)$ subsequences
+\end{rm}
+\end{lemma}
+
+{\em Proof.} There are $n$ subsequences of size 1, $n-1$ of size 2,
+$\ldots$, 1 of size $n$. $n + (n-1) + (n-2) + \ldots + 1$ = $\frac{1}{2}
+n(n+1)$. $\Box$
+
+
+\begin{lemma}\label{lemma:seq_initiate}
+\begin{rm}
+The number of sequences which a sequence in position $k$ initiates in
+a sequence of size $n$ is $n-k$. We assume the first position is
+denoted by 0.
+\end{rm}
+\end{lemma}
+
+{\em Proof.} Trivial. $\Box$
+
+
+\begin{figure}[ht]
+\centerline{\scalebox{0.6}{\includegraphics{../Event_theory/sequence.eps}}}
+\caption{\label{fig:sequence} All possible subsequences in a sequence
+containing 6 points}
+\end{figure}
+
+
+\begin{lemma}\label{lemma:seq_extend}
+\begin{rm}
+The number of sequences which start after and end after a sequence $s$
+of size $n$ is: (Assuming a total sequence length $m$)
+\[
+(\sum_{i = 1}^{n} m - i) - (\frac{1}{2}n(n+1) - (n-1))
+\]
+\end{rm}
+\end{lemma}
+
+{\em Proof.} Clear, using lemmas~\ref{lemma:subseq} and ~\ref{lemma:seq_initiate}. $\Box$
+
+
+ 
+\begin{theorem}
+\begin{rm}
+Given a subsequence $s$ of a relation sequence $\Delta$ and a formulae $\sigma$ in NDLTL
+we prove that ($\Delta$, $s$) $\models \sigma$ can be shown in
+ polynomial time.
+\end{rm}
+\end{theorem}
+
+\smallskip
+
+{\em Proof.} We show that inductively that we can test if  
+($\Delta$, $s$) $\models \sigma$ in
+polynomial time. We base our proof on the structure of $\sigma$.
+
+\smallskip
+({\em Basis}): If $\sigma$ is an atomic formula of the form $X
+\to^{\uparrow\mathcal{K}} Y$ or  $X \to^{\downarrow\mathcal{K}} Y$ we
+examine each consecutive pair of points (relations) in $s$ to determine if the trend
+is satisfied. This can be achieved in linear time. Similarly we can
+test branching factor values of regression and discordance in linear
+and polynomial time respectively.
+
+\smallskip
+({\em Induction}): We now consider all possible structures of
+$\sigma$. If $\sigma$ is of the form:
+\begin{enumerate}
+\item $\neg \sigma$  we need to determine if ($\Delta$, $s$)
+$\not\models \sigma$. We assume, by the inductive hypothesis, that
+$\sigma$ can be checked in polynomial time. Therefore it is easy to
+see that $\neg \sigma$ can also be checked by polynomial time.
+\item $\sigma_1 \wedge^k \sigma_2$ - we assume that $\sigma_1$ and
+$\sigma_2$ can be determined in polynomial time and it is clear that
+the result of the cross-correlation function
+ccor(br($\sigma_1$),br($\sigma_2$),k) can be computed in polynomial
+time. Similarly $\sigma_1 \wedge \sigma_2$ holds.
+\item $\sigma_1 \leadsto \sigma_2$ can be tested in time polynomial
+from lemma~\ref{lemma:seq_extend}.  
+\item \safe{n} $\sigma$ can be determined if for all subsequences of $s$
+we can show that $\sigma$ holds.  Given \safe{n} there
+are $\frac{1}{2} n(n+1)$ subsequences of $s$ where $n$ is at most the
+size of the sequence. We assume that each
+subsequence can be checked in time polynomial, implying that \safe{n}
+$\sigma$ can be checked in polynomial time.
+\item \guar{n} $\sigma$ holds if there is at least one subsequence
+$s_2$, of size $n$,
+of $s$ such that ($s, s_2$) $\models \sigma_1$ and it is clear
+that we can examine each subsequence of this individually in
+polynomial time.
+\end{enumerate}
+We have shown by induction on the structure of $\sigma_1$ that we can
+check if this is satisfied in polynomial time.$\Box$
+ 
+
+We now show why we restrict ourselves to sequences of a fixed
+length. We define a {\em cover} to be a set of sequences of different
+sizes over a complete sequence. In a time series there may be
+properties which hold across different sequence sizes, however we now
+show that there is an exponential number of such {\em covers}.
+
+\begin{lemma}\label{lemma:covernum}
+\begin{rm}
+Given a sequence $s_n$ containing $n$ relation states then $s_n$ has
+$\frac{(n+1)!}{2}$ covers.
+\end{rm}
+\end{lemma}
+
+{\em Proof.} If there is 1 relation in a sequence there is only 1
+cover.  If $n > 1$
+then we state that there are $m_n$ covers.  We note that an $n-1$ size
+sequence has $m_{n-1}$ covers. A sequence $s_n$ will have one more
+relation in the sequence than $s_{n-1}$. The additional relation state in
+$s_n$ provides an additional $n+1$ ways of combining with $m_{n-1}$ so
+we have the recurrence relation
+\begin{eqnarray*}
+	m_1	& = & 1 \\
+	m_n	& = & (n+1)m_{n-1}
+\end{eqnarray*}
+We can easily see that $m_n = (n+1)(n)(n-1)(n-2) \ldots 3.1$
+which is equivalent to $\frac{(n+1)!}{2}$  $\Box$
+
+\medskip
+
+We therefore restrict ourselves to fixed length sequences in the logic
+for safety properties ($\bm^n$) defined in section~\ref{subsec:to}.
+
+
+\subsection{Finite Models: Putting our Logic in context}
+
+\subsection{Expressiveness of NDLTL}
+
+
+\section{Temporal Logic Properties}\label{sec:tl_properties}
+\index{Temporal Logic Properties}
+\index{Temporal Properties|see{Temporal Logic Properties}}
+
+
+We now show how we can use our logic for the expression of properties
+which may hold for a temporal sequence. Initially, we informally
+discuss the intuition behind the properties holding in our logic.
+Properties may take numerous forms:
+
+\begin{description}
+\item[Safety Properties] have the canonical form \safe{n} $\sigma$. We may
+refer to invariant NDs as safety properties. The ``informal''
+description of safety, stating that nothing bad ever happens implies
+that it is a bad thing if $\sigma$ does not hold in a
+relation. \cite{sis94} describes {\em strong safety} properties which
+remain safety properties after the exclusion of a state. In our logic
+all possible sequences satisfying a property imply that it is a safety
+property.  For example ($\Delta$,$s$) $\models$ \safe{n} $(X \to^{\up k} Y)$ implies that all
+subsequences of $s$ satisfy an upward trend.
+\item[Conditional Safety Properties] have the form $\sigma_1$ $\leadsto$
+\safe{n} $\sigma_2$. We
+can refer to this as a {\em trigger}. It is apt within a finite
+temporal sequence wherein a certain value may imply other values for all
+subsequent states.
+\item[Guarantee Properties] have the canonical form \guar{n} $\sigma$.
+\item[Obligation Properties] are the disjunction of canonical safety
+and guarantee properties \guar{n} $\sigma_1$ $\vee$ \safe{m}
+$\sigma_2$. A canonical
+obligation formula is a conjunction of these properties. Note that the
+sequence sizes need not be the same, though the knowledge discovery
+context of this is not clear.
+\item[Response Properties] are of the form \resp{n}{m} $\sigma$. At a particular
+point all points imply that $\sigma$ will hold at some point in the
+future, is the temporal logic definition. Our definition is that 
+all sequences of size $n$ will, at some point, contain a sequence of
+size $m$ which satisfies $\sigma$. It is clear that we can use this
+property to present seasonal behaviour to the system user.
+Alternatives for standard temporal logic, listed in \cite{mp92} are $p \to \Diamond q$ ,
+known as response to an impulse, and
+$\Box(p \to \Diamond q)$ where $\Diamond$ implies at some point in the
+future and $\Box$ imples at all points in the future.
+Within our logic a response property may occur only finitely
+many times.
+\item[Persistence Properties] These may be triggered by a preceding
+event where we infer that all positions from a certain point on
+satisfy $p$, written \pers{n}{m} $\sigma$. In our sequence logic a
+persistence property implies that at some point in a sequence of size
+$n$ all sequences within $n$ of size $m$ satsify $\sigma$. This is
+meaningful to depict properties which may hold in nonlinear time
+series, for example, a continuous downward trend in an otherwise
+rising microchip stock
+due to an unforeseeable influence, such as fires in the chip factory
+destroying stock. It is likely that this would otherwise represent
+nonlinear behaviour.
+\item[Reactive Properties] shown in \cite{mp92} to be the maximal
+class of properties which needs to be considered, written as
+\resp{n}{m} $\sigma_1$ $\vee$ \pers{n}{m} $\sigma_2$. Within the
+finite sequence of our logic and the knowledge discovery process such
+a property found would represent fairly complex behaviour.
+\end{description}
+
+
+
+%% CONDITIONAL GUARANTEE
+
+\begin{definition}[Conditional Guarantee Property]\label{lem:cond_guaran}
+\begin{rm}
+A conditional guarantee property implies that all subsequences  of
+a fixed size $n$ 
+always contain a sequence where $\sigma_0 \lessdot \sigma_2$ and
+($\Delta$,$\sigma_2$) $\models$ \diam$^{m}$ $\sigma_1$. This is written as
+$\Delta$ $\models$ \safe{n} ( $\sigma_0 \leadsto$ \diam$^{m}$ $\sigma_1$).
+\end{rm}
+\end{definition}
+
+
+%% CANONICAL RESPONSE
+
+\begin{definition}[Canonical Response Property]\label{lem:canresp}
+\begin{rm}
+This property can also be viewed as a seasonal occurrence property.
+$\Delta$ $\models$ \resp{n}{m} $\sigma$
+\end{rm}
+\end{definition}
+
+
+%% RESPONSE
+
+\begin{definition}[Correlated Response Property]\label{lem:response}
+\begin{rm}
+$\Delta$ $\models$ \safe{n} ( $\sigma_0 \wedge^k \sigma_1$) 
+\end{rm}
+\end{definition}
+
+
+%% ORDERED RESPONSE
+
+\begin{definition}[Seasonal Response Property]\label{lem:seasresponse}
+\begin{rm}
+$\Delta$ $\models$ \safe{n} ( $\sigma_0 \leadsto \sigma_1$ )
+\end{rm}
+\end{definition}
+
+
+%% PERSISTENCE
+
+\begin{definition}[Persistence Property]\label{lem:persist}
+\begin{rm}
+$\Delta$ $\models$ \pers{n}{m} $\sigma$
+\end{rm}
+\end{definition}
+
+%% ORDERED PERSISTENCE
+
+\begin{definition}[Ordered Persistence Property]\label{lem:ord_persist}
+\begin{rm}
+$\Delta$ $\models \sigma_0 \leadsto$ \pers{n}{m} $\sigma_1$
+\end{rm}
+\end{definition}
+
+
+\subsection{Application of Properties}
+
+We now show how the properties are related to each other. We note that
+the classification provided in figure~\ref{fig:Classification}, given
+in \cite{mp92}, for temporal logic properties holds within our logic. We make use of this {\em hierarchy} to discover rules in
+an incremental fashion.
+
+\begin{figure}[ht]
+\centerline{\scalebox{0.8}{\includegraphics{../Event_theory/Prop_class.eps}}}
+\caption{\label{fig:Classification} A Classification of Temporal
+Properties}
+\end{figure}
+
+\section{Discussion}\label{sec:tl_disc}
+
+Schema evolution \cite{rod94} is a research area on the fringes of
+temporal data mining. Schema evolution is defined as the ability for a
+database schema to evolve without the loss of existing
+information. Mining the changes in schemas for patterns is a valid
+temporal data mining research area, not yet well developed \cite{hk98}.

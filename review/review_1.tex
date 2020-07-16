@@ -1,0 +1,2011 @@
+\chapter{Relational Database, Data Mining, and Statistical
+Theory}\label{chap:review}
+
+The aims of this chapter are to provide the requisite
+background to be able to read the thesis as a self-contained body of
+work as well as enabling the reader to appreciate this research within
+the wider fields of both Relational Database theory and Data Mining.
+
+In section~\ref{sec:db_for_dm} we describe the context of this work
+within the {\em not necessarily} contiguous fields of database theory,
+in particular data dependency theory in indefinite and temporal
+relations, and data mining. Much data mining is disjoint from database
+theory based within statistics or machine learning.  
+In section~\ref{sec:relmod} we introduce
+the relational database theoretic
+concepts relevant to this thesis and in section~\ref{sec:datmin}
+introduce the area of data mining, concentrating firstly on dependency data
+mining so that the reader can fully appreciate the context of
+Chapter~\ref{chap:numdep} and then temporal data mining for the
+background of Chapters~\ref{chap:templog} and~\ref{chap:tempresult}. In later chapters we will refer to
+the definitions presented in~\ref{sec:relmod} and~\ref{sec:datmin}
+as and when they are initially used.
+
+\section{Database Theory for Data Mining}\label{sec:db_for_dm}
+
+There has been significant work in the data mining community on the
+mining of data dependencies, both in standard \cite{psm93,km95} and
+temporal environs \cite{bwj96}. Much of this work concentrates solely
+on the discovery process, in effect working totally within a machine
+learning (ML) context, i.e. \cite{she91}; scant regard is paid to the
+database theory upon which the {\em dependencies} are based. Though we
+do not question the quality of this work because of this omission we
+believe that Numerical Dependencies (NDs) which fit into the
+relational model, both for design and, as we show in this thesis, data
+mining, are a valuable tool. We introduce the background material on
+database theory in section~\ref{sec:relmod} to clarify
+later work on Armstrong relations and the chase procedure, a
+theorem proving tool for FDs in a relation, as well as our use of indefinite
+information for the consistency problem. Theoretical work on FD behaviour has directly led to the
+creation of numerous data mining methodologies which we introduce
+in~\ref{subsec:fdmining}.  Section~\ref{sec:relmod} concludes with a presentation of
+temporal databases and dependencies.
+
+Section~\ref{sec:datmin} introduces aspects of dependency data mining,
+including a discussion of the relationship to NDs. We provide a discussion of measures based
+on aspects of FD theory in~\ref{subsec:fdmining}. We then introduce
+temporal databases and dependencies before moving on to temporal data
+mining and rule discovery from time series, closely
+related to work in Chapters~\ref{chap:templog} and~\ref{chap:tempresult}.
+This section concludes with a brief overview of sampling in data mining,
+useful for later work on resampling in indefinite and temporal
+relations followed by an informal introduction to resampling.
+
+
+\section{Relational Database Theory}\label{sec:relmod}
+\index{Relational Database|see{Relational Data Model}}
+\index{Deductive Database}
+
+We now present the relational database theory required within this
+thesis. The reader is referred to
+\cite{atze93,databasefound,Maier83,Ullm88} for a complete coverage of
+the area.
+
+\subsection{The Relational Model}
+\index{Relational Data Model}
+
+In 1970, E. F. Codd introduced the relational model \cite{cod70}, with
+relations as the data structure,  so
+that database users need not concern themselves with the physical
+storage of data.  This allowed independence between programs and their
+machine representations by providing a sound basis for describing the
+structure of data and operations for data manipulation without the
+need for consideration of the internal machine
+representation. Subsequently other data models have been developed,
+including the Entity-Relationship model, for high level conceptual
+database modelling, and the object-oriented data model
+\cite{kim90,databasefound}. The latter was primarily developed to
+combat the growing requirements for complex data manipulation; we do
+not make further reference to these data models and remain within the
+confines of the relational model in this thesis. Its universality and ease of data
+manipulation does not require further justification though, as a final
+remark on this issue, we note that complex data manipulation, such as
+visual pattern recognition, may require a more sophisticated data
+model if database storage is to be used. We now formalise the
+relational model.
+
+
+\begin{definition}[Universe]
+\begin{rm}
+A universe $\cal U$ is a finite, fixed set of symbols that represent the 
+column names within a relation.  They are referred to as attributes.
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[Attribute Domain]
+\begin{rm}
+The domain of an attribute $A \in \cal U$, denoted by DOM(A), is the set
+of possible values which can be members of A.  This is the set
+of values which can appear in a column of A.
+\end{rm}
+\end{definition}
+
+\begin{definition}[Relation Schema and Relation]
+\begin{rm}
+A relation schema R is a subset of the universe $\cal U$.  The elements
+of a relation schema are denoted by $\{ A_1, \ldots, A_n \}$.
+A {\em tuple} over R is an element of $DOM(A_1) \times \ldots \times
+DOM(A_n)$, where $\times$ refers to the cartesian product.  An instance
+of a relation over R is a finite set of tuples defined over R.
+\end{rm}
+\end{definition}
+
+A relation consists of a finite set of tuples where each tuple
+represents an entity.  A relation is therefore simply an entity set. 
+Each tuple can be considered a row if we assume
+the table representation of a relational database.
+
+\begin{definition}[Database Schema and Database]
+\begin{rm}
+A Database Schema over $R$ is a finite set of relation schema $\{ R_1,
+\ldots, R_n \}$.  A database over $R$ is a finite set $d$ = $\{ r_1,
+\ldots, r_n \}$ such that each $r_i \in d$ is a relation over $R_i \in
+R$.
+\end{rm}
+\end{definition}
+
+The relational algebra is presented by Codd \cite{cod70} in the context of
+deriving desired result relations from other relations.  The operations include
+permutation, projection, defined below, and join, composition;  all
+are defined in \cite{databasefound,atze93,Date95,Maier83,Ullm88}.
+
+\begin{definition}[Projection]
+\begin{rm}
+The {\em projection } of an R-tuple $t$ onto a set of attributes Y $\subseteq$
+R, denoted by $t[$Y$]$ (also called the Y-value of $t$), is the
+restriction of $t$ to the attributes in Y.  The projection of a
+relation $r$ onto Y, denoted as $\pi_Y$(r),
+is defined by $\pi_Y$(r) = \{ t[Y] $\mid$ t $\in$ r \}.
+\end{rm}
+\end{definition}
+
+We now move on to the representation of constraints in the relational
+model required to ensure the maintenance of integrity within a
+database. Data mining now such constraints and constraint
+approximations to discover previously unknown and non-trivial
+information \cite{kdd96}.
+
+
+\subsection{Functional Dependencies}
+\index{Integrity Constraints}
+			\index{Data Dependencies}
+			\index{Functional Dependency}
+			\index{Determination}
+			\index{Keys!Primary}
+			\index{Keys!Foreign}
+			\index{Functional Independency}
+			\index{Axiomatisation}
+		
+Integrity constraints, or data dependencies, allow a database to have
+associated with it an intended meaning or semantics for the tuples
+within the database.  The most common
+constraint is the Functional Dependency (FD) introduced in
+\cite{cod72} and given a sound and
+complete axiomatisation in \cite{Arms74}; its most common application in practice is as
+a key dependency. For efficiency reasons these dependencies
+are restricted first order logic (FOL) sentences shown in
+\cite{sdpf81} to be equivalent to Horn clause statements, relating
+determinations to logical implication \cite{fag77,logicfound,mak87}.    There has been extensive work on the theory of FDs,
+of which some seminal contributions are
+\cite{Arms74,fag77,bb79,sdpf81}. Although work on FD theory has somewhat
+exhausted itself there has recently been extensive work in data mining for
+approximating FDs \cite{Mann92,sf93,bb95,hkp98}.
+
+\begin{definition}[Data Dependency]
+\begin{rm}
+A data dependency is a restricted integrity constraint incorporating a
+(specified) property that is to be satisfied by all instances of the database
+schema.
+\end{rm}
+\end{definition}
+
+Dependencies within the relational model allow for the incorporation of a more
+complex semantics via meta-data representations. We now formalise the
+FD, its axiom system and the closure of FD attribute sets.
+
+
+\begin{definition}[Functional dependency]
+\begin{rm}
+A {\em functional dependency} over R (or simply an FD)
+is a statement of the form X $\to$ Y, where X, Y $\subseteq$ R.
+\end{rm}
+\end{definition}
+\medskip
+ 
+ F {\em is known as a set of FDs over } R and X $\to$ Y 
+{\em is  a single FD over } R. We denote logical implication by $\models$.
+ 
+\begin{definition}[Satisfaction of an FD]\label{def:sat}
+\begin{rm}
+Given $s$,  a definite relation over R,
+an FD X $\to$ Y is {\em satisfied} in $s$,
+denoted by $s \models$ X $\to$ Y, whenever
+$\forall t_1, t_2 \in$ s, if $t_1$[X] = $t_2$[X] then $t_1$[Y] = $t_2$[Y].
+A set of FDs F is {\em satisfied} in $s$,
+denoted by $s \models$ F, whenever
+$\forall$ X $\to$ Y $\in$ F, $s \models$ X $\to$ Y.
+\end{rm}
+\end{definition}
+\medskip
+ 
+FDs obey a set of axioms, shown to be sound and complete, in
+\cite{Arms74}, which are:
+{\setlength{\baselineskip}{15pt}
+\begin{definition}[Armstrong's Axioms for functional dependencies]
+\begin{rm}
+Given a relation schema $R$ and $X,Y,Z \subseteq R$:
+\begin{description}
+\item[Reflexivity] If $Y \subseteq X$, then $X \to Y$
+\item[Augmentation] If $X \to Y$ then $XZ \to YZ$
+\item[Transitivity] If $X \to Y$ and $Y \to Z$, then $X \to Z$
+\end{description}
+\end{rm}
+\end{definition}
+}
+
+\begin{definition}[Closure of an attribute set]
+\begin{rm}
+Given a set $F$ of FDs over a set of attributes $X$ the closure of $X$ under $F$, denoted $X^+$, is the set
+\begin{displaymath}
+\{ A \in R \mid F \models X \to A \}
+\end{displaymath}
+\end{rm}
+\end{definition}
+
+
+$X_F^+$ refers to the closure of $X$ with respect to $F$, that is
+the set of all attributes $A \in R$ such that $X \to A$ holds in $F$.
+We define $F^\star$ to be the closure of $F$ such that trivial
+FDs of the form $X \to Y$, where $Y \subseteq X$, are excluded.
+
+\begin{definition}[Non-trivial closure]
+\begin{rm}
+$F^\star = \{ X \to Y \mid XY \subseteq R \quad\mbox{and}\quad Y \subseteq X_F^+ - X \}$
+\end{rm}
+\end{definition}
+
+\begin{definition}[Closure of a set of attributes]
+\begin{rm}
+Given an FD set $F$ we denote the closure of all possible
+attribute sets under $F$ by $CL(F)$. This is defined as
+\begin{displaymath}
+CL(F) = \{X \mid X \subseteq R \quad\mbox{and}\quad X_F^+ = X \}
+\end{displaymath}
+\end{rm}
+\end{definition}
+
+Note that the schema $R$ is always included in the closure of attribute
+sets for any FD set. The next lemma shows that $F^\star$ and 
+$CL(F)$ are equivalent in characterising a set of FDs $F$. The
+non-trivial closure is relevant in possible data mining measures,
+discussed in~\ref{subsec:fdmining}.
+
+\begin{lemma}
+\begin{rm}
+Given two sets of FDs, $F$ and $G$, we then prove 
+\begin{equation}\label{eq:pr1}
+G^\star \subseteq F^\star \equiv CL(G) \supseteq CL(F)
+\end{equation}
+\end{rm}
+\end{lemma}
+
+{\em Proof. (if) }
+Assume, to the contrary, that $CL(G) \not\supseteq CL(F)$.
+Therefore $\exists X \in CL(F)$ such that $X \not\in CL(G)$, implying
+that $X$ is not closed in $G$. 
+Then $X_G^+ = XY$, for some attribute set $Y$.
+ This implies that $X \to Y$ is in $G$ but
+not in $F$, yet $G^\star \subseteq F^\star$, leading to a contradiction.\\
+
+{\em Proof. (only-if) }
+Assume, to the contrary, that $G^\star \not\subseteq F^\star$. 
+Then $\exists X \to Y \in G^\star$ such that $X \to Y \not\in F^\star$.
+Then $Y \subseteq X_G^+$ but $Y \not\subseteq X_F^+$, 
+and so $X^+_G \not= X^+_F$.
+Given that $CL(G) \supseteq CL(F)$ it must be the case that 
+any closed set in $F$
+must be closed in $G$, and so we have a contradiction. $\Box$\\
+
+
+
+\begin{definition}[Closure of a set of FDs]
+\begin{rm}
+Given an FD set $F$ we denote the closure of $F$ by $F^+$. 
+This is defined as
+\begin{displaymath}
+F^+ = \{X \to Y \mid XY \subseteq R \quad\mbox{and}\quad F \models X
+\to Y  \}
+\end{displaymath}
+\end{rm}
+\end{definition}
+
+
+An algorithm to compute the closure of a set of functional dependencies is in 
+\cite{databasefound,atze93} which runs in time linear to the size of
+the set FDs. The
+concept of a maximal set is now introduced; its data mining
+applications will be briefly discussed in
+section~\ref{subsec:fdmining} and Chapter~\ref{chap:numdep}.
+
+\begin{definition}[Maximal Set]
+\begin{rm}
+Given $X$ a subset of schema $R$ and $A \in X$ then
+a set $Y \subseteq X$ is a {\em maximal} set for $A$, if $Y \not\to A$ and for any
+$Z \subseteq X$ such that $Y \subset Z$ we have $F \models Z \to A$
+\end{rm}
+\end{definition}
+
+A maximal set is an attribute set $X$ which for some attribute $A$ is
+a largest possible set {\bf not} determining $A$. We also define
+generator sets. The generator function omits those sets from the
+closure of an attribute set which can be formed by the intersection of
+other sets in the closure to obtain a more concise
+representation. Theorem 13.1 of \cite{Mann92} shows that $max(X) = GEN(X)$.
+
+\begin{definition}[The set of all maximal sets]
+\begin{rm}
+$max(F,X,A) = \{ Y \subseteq X \mid Y$ is a maximal set such that
+$F \not\models Y \to A \} $.  If F is understood from the context then it
+is written simply $max(X,A)$. $max(X)$ denotes the union of max(X,A)
+where $A \in X$.
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[The generator function]
+\begin{rm}
+The generator function produces a set for $X$ such that
+$GEN(X)$ = $\{ y \in CL(X) \mid Y \subset \cap \{ W \in CL(X) \mid Y
+\subset W \}\}$
+\end{rm}
+\end{definition}
+
+We now define the cover of a set of dependencies, useful for
+discovering equivalent FD sets.
+
+\begin{definition}[Cover of a set of Dependencies]
+\begin{rm}
+Given sets F and G of functional dependencies, F is a {\em cover} of G if the 
+dependency set of G satisfied by a relation r is also satisfied by F and vice versa. Therefore F and G hold within the same databases, that is, $F \models G$ and $G 
+\models F$.
+A {\em cover} is minimal for $F$ if it is equivalent to $G$ and there is no redundant dependency provided by Armstrongs axioms \cite{Arms74}. A minimal cover is necessarily nonredundant, that is, $\forall d \in G$ we have  $G \backslash \{ d \} \not\models d$, though the converse is not necessarily true.
+\end{rm}
+\end{definition}
+
+\begin{example}
+\begin{rm}
+From \cite{mr92}, the set $F = \{ A \to BC, B \to AD, CD \to E, E \to CD \}$ and the set  $G = \{ A \to BE, B \to A, CD \to E, E \to CD \}$ are equivalent. This is proven by showing that $G \models F$ and $F \models G$.  The non-trivial
+cases are showing that $F \models A \to E$ and $G \models \{ A \to C, B \to D \}$. To illustrate, $A \to C$ may be shown to hold from G as we know $A \to E$ holds, and by transitivity $A \to CD$ holds, and therefore $A \to C$ is known to be satisfied by G.
+\end{rm}
+\end{example}
+
+To test if two covers, $F$ and $G$, are equivalent we can check that
+every $X \to Y \in F$ is satisfied in $G$ and vice versa.  Using the
+algorithm presented in \cite{mr92} this can be done in time $O( \mid F
+\mid \| G \| + \mid G \mid \| F \|)$. Alternatively, we can check for
+equivalence of the maximal sets. We now introduce some notation to aid
+the reading of the next section.
+
+\begin{definition}[Left-hand sides of A]
+\begin{rm}
+Given a relation schema $R$, a set $F$ of functional dependencies, an
+attribute $A \in R$, the set of minimal attribute sets $X \subseteq R$
+such that $X \to A \in F^+$ is given by
+\begin{displaymath}
+lhs(r,A) = \{ X \subseteq R\backslash \{ A \} \mid F \models X \to A \wedge \forall Y \subset
+ X: F \not\models Y \to A \}
+\end{displaymath}
+The families lhs(r,A) contain all the information about F.
+\end{rm}
+\end{definition}
+
+\begin{definition}[Agreement set of two tuples]
+\begin{rm}
+Given a relation $r$ over attribute set $R$, where $t_1$,$t_2$ are
+two tuples in $r$. The Agreement set is defined as
+\begin{displaymath}
+ag(t_1, t_2) = \{ B \in R \mid t_1[B] = t_2[B] \}
+\end{displaymath}
+The disagreement set is defined dually, disag($t_1$,$t_2$) = $R \backslash \{ A \} $.
+\end{rm}
+\end{definition}
+
+Given an attribute A in disag(a,b) and X is the disagreement set of all
+attributes for tuples a and b apart from A, i.e. X = disag(a,b) $\backslash \{ A \}$.  
+Then any set in the left-hand side of A must contain at least one
+attribute of X. Why is this so?  Let us assume that it does not hold and
+that for a member of the left-hand side of A an attribute of X is not
+contained.  This implies, however, that there exist two tuples which disagree
+on A when they have the same left-hand side.  Obviously this violates F and so is
+not the case. X is therefore said to be a necessary set for A, used in
+dependency mining \cite{Mann92}.
+
+\begin{definition}[Necessary sets]
+\begin{rm}
+The collection of all necessary sets for A is
+\begin{displaymath}
+nec'(r, A) = \{ disag(s,t) \backslash \{ A \} \mid s,t \in r \wedge A \in
+ disag(s, t) \}
+\end{displaymath}
+These are then filtered to remove supersets:
+\begin{displaymath}
+nec(r , A) = \{ X \in nec'(r, A) \mid \neg\exists Y \in nec'(r,A): Y \subset X \}
+\end{displaymath}
+\end{rm}
+\end{definition}
+
+These are equivalent to the complements of the maximal sets of F, the FD
+set for relation r.  We now define  Armstrong Relations (AR) and
+follow this with a discussion of database design and its relationship
+to data mining.
+
+\subsection{Armstrong Relations}\index{Armstrong Relations}
+
+
+\cite{Arms74} introduced the concept of an Armstrong relation and an Armstrong 
+database.  
+
+\begin{definition}[Armstrong Relation]
+\begin{rm}
+An Armstrong relation for $F$ is a relation $r$ which satisfies $F^+$
+and is such
+that for every FD $\sigma \not\in F^+$ for which  $F^+ \not\models
+\sigma$, then $r$ violates $\sigma$.
+\end{rm}
+\end{definition}
+
+In theory, {\em Armstrong relations} \cite{fag82,bdfs84,dt95,gl90,lev95,mr86}
+serve as ``ideal'' example relations, since they satisfy exactly the set of
+all logical consequences of the set of FDs specified, say F.
+Thus an Armstrong relation provides an example for all FDs
+that are logically implied by F and a counterexample for all 
+those FDs that are not logically implied by F.
+One of the problems with Armstrong relations is that, in general,
+their cardinality is exponential in the size of F and set of attributes, R,
+over which F is defined \cite{bdfs84}. An Armstrong relation for a
+set of FDs, if
+deterministically generated \cite{Mann92}, always provides
+the same resulting relation. It would be highly desirable if varying Armstrong relations
+of different domain and tuple sizes may be generated as a side effect of 
+the forming of example relations.
+
+\medskip
+
+\cite{fag82} presents a survey of Armstrong Databases  including
+descriptions of the techniques for generating Armstrong Relations from
+a set of FDs.  
+These are:
+\begin{description}
+\item[Disjoint Union] Create an isomorphic copy of each relation and
+then form the union of all of the tuples in all of the relations. For
+each FD $\sigma$ which is not a logical consequence of the relations create
+a relation $r_\sigma$ which obeys F but not $\sigma$. Then form the union
+for all {\em standard} FDs to give an AR. It will not work for nonstandard
+FDs.
+\item[Agreement Sets] The agreement set is formed such that
+$GEN(F) \subseteq agr(r) \subseteq CL(F)$, see below.
+\item[Direct Products] (Used by \cite{gm85a} to prove no Horn clause
+represention for NDs) A relation is created for each $\sigma$ outside
+of CL(F) which violates $\sigma$ and satisfies CL(F). The DP of these
+is then formed.
+\item[Chase Procedures] Given an Armstrong database which obeys the FD set
+F and violates all FDs outside of CL(F). A model is formed where all
+FDs are violated using the chase which can cause new tuples and/or
+constants to be added to the database.
+\item[Random Relations] shown not to work. We shall see in
+Chapter~\ref{chap:numdep} how an evolutionary technique guided by ND
+satisfaction may often work.
+\end{description}
+
+\medskip
+
+\cite{fv83} shows that an Armstrong database may be generated for a set of inclusion 
+dependencies and standard functional dependencies.  A functional dependency is
+standard if the left hand side is nonempty and an inclusion dependency
+states that if some combination of values occurs in one part of a
+database it  must also occur in another part. 
+
+\cite{bdfs84} construct an Armstrong relation by
+\begin{enumerate}
+\item Computing the closure of the FD set $F$, $CL(F)$
+\item Constructing a relation such that $agr(r) = CL(F)$ where
+\newline
+$agr(r) = \{ X \mid $ for all distinct tuples $t_1,t_2$ in $r$,
+ag($t_1$,$t_2$) =  $X \}$
+\end{enumerate}
+
+Lemma 3.1 \cite{bdfs84} shows that if $\Sigma$ is a set of FDs and $\sigma$ a
+single FD such that $\Sigma \not\models \sigma$ then there exists a two tuple
+relation that obeys $\Sigma$ but not $\sigma$.  A by product of this result is
+that it is always possible to add a tuple to a relation $r$ which violates all 
+functional dependencies in the FD
+set $\Sigma$ which holds in $r$.  A deficiency of this process may be that only one
+specific Armstrong relation is ever returned for a given FD set.
+\cite{bdfs84} present an analysis on the upper and lower bounds of the
+size of an Armstrong Relation based on the number of distinct entries
+in the relation, referred to as the generator sets which \cite{mr86}
+later refine.
+
+
+\cite{mr86} show that the size of a minimal Armstrong relation for a normalised
+scheme $R$ depends strongly on the number of keys for R.  The possible exponential size of a minimal Armstrong relation depends only on the number of dependencies, and not on the number of attributes.
+
+An Armstrong relation should be as small as possible, as should the set of values used, though the smaller the relation the more difficult it becomes for the designer to locate all of the anomolies as opposed to an Armstrong relation which lists all examples of dependency violations in a pairwise format.\\
+
+\subsection{Relational Database Design}\label{subsec:reldbdes}
+
+		\index{Relational Database Design}
+			\index{Database Design|see {Relational Database
+								Design}}
+			\index{Referential Integrity}
+			\index{Normalisation}
+			\index{Redundancy}
+			\index{Normal Form}
+			\index{Closed World Assumption}
+
+We now mention relational
+database design related to work presented in
+Chapter~\ref{chap:numdep}. Informally, database design attempts to
+remove redundancy and improve querying efficiency by the use of normalisation.
+A relation can be 
+constructed to adhere to a series of increasingly restrictive normal forms introduced so as to prevent redundancy and (update) anomalies within the
+database, discussed in 
+\cite{cod72,databasefound,atze93,Date95,
+Maier83,Ullm88}. 
+
+\medskip
+
+Keys provide the only method for tuple identification  in the standard
+relational model, and they are
+therefore central to the retrieval of information and good database design. There are many key
+related properties whose determination is computationally intractable
+\cite{lo78}. We now present the superkey class, used within Boyce-Codd
+Normal Form.
+
+\begin{definition}[SuperKey]
+\begin{rm}
+Given a relation scheme R and a set  $\Sigma$ of FDs which apply to it, a  set of attributes X is a superkey for R if the FD X $\to$ R $\in \Sigma^+$.
+\end{rm}
+\end{definition}
+
+\begin{definition}[Boyce Codd Normal Form]
+\begin{rm}
+Given a relation scheme R and a set of FDs $\Sigma$ which apply to it, R is in Boyce Codd Normal Form (BCNF) if for every nontrvial FD $X \to A \in \Sigma^+$, X is a superkey.
+\end{rm}
+\end{definition}
+
+
+We assume that all relations discussed in this thesis
+satisfy first normal form (1NF), where each relation is flat, and
+present a database or relation satisfying BCNF as the ideal normal form,
+where each non-trivial FD has a superkey as a $lhs$. \cite{bb79}
+present an analysis method to achieve a BCNF relation by splitting
+relations successively which violate BCNF, though this procedure is
+not constraint preserving.  \cite{zm81} present a treatment of relational schema design with regard to complete reliability conditions.  A non-mathematical treatment of normal forms is given in \cite{ken83} which are then
+extended for temporal relations in \cite{jss92}. 
+
+BCNF attempts to overcome the deficiencies in 3NF which may arise in the case  where there are candidate keys which overlap.
+
+
+\cite{sm81} introduced the
+use of example relations generated from a set of FDs and MVDs  for 
+database design purposes. 
+\cite{sm81} present a design technique which attempts to provide the
+database designer an iterative method of obtaining the FD set which
+most {\em characterises} a relation.  More recently, 
+Mannila and R\"{a}ih\"{a} , \cite{mr86, mr92}, approach various database
+design problems with the goal of formalising methods and tools to
+produce schemas with specific properties. They 
+introduce the technique of using example relations within the design
+process, notably as ``an application of ARs'', by presenting an
+algorithm to deterministically generate ARs for the benefit of the
+database designer. \cite{bdfs84} discuss the structure of Armstrong relations.  They note how an
+Armstrong relation, perhaps generated automatically from a set of FDs, is of
+much use in the design process from an application point of view.  A drawback
+is that a minimal size Armstrong relation may be of exponential size (on the 
+number of attributes in the relation).
+
+\medskip
+
+In \cite{cl98c} we present a probabilistic extension of this work,
+ allowing the database designer to view many different example
+ relations, though not necessarily ARs, for any given FD set specified
+ over $R$. The size of the relation is governed by the database designer.
+Mannila and R\"{a}ih\"{a} state, \cite{mr86}, ``A good example
+ relation should not leave the designer any illusions about what can be stored in the database.''
+
+\medskip
+
+Our algorithm for generating example
+ relations achieves this. It is based on the following loop
+which we envisage during the database design process:
+\begin{enumerate}
+\item The database designer specifies a set of FDs, F, 
+ the maximum number of tuples in the example relation, $m$, and
+the maximum domain size, $d$, for a relation. (The designer
+has the options of specifying $m$ and $d$ so that relations
+of different structure can be viewed.)
+\item A random example relation satisfying F, 
+having at most $m$ tuples, and a domain ranging
+from 2 to $d$ values is generated. The quality,
+in terms of its proximity to that of an Armstrong relation, for the 
+FD set is measured and returned to the designer.
+\item The database designer either accepts F or modifies the parameters
+F, $m$ and $d$, 
+and then returns to step (2).
+\end{enumerate}
+
+Two aspects of this work are discussed in the next chapter; the
+evolutionary hill climbing algorithm which uses NDs in a hill climbing
+fashion to obtain a relation satisfying an FD set and the {\em
+quality} function used to obtain a proximity to an Armstrong relation
+for the output, which may be viewed as the data mining component of
+this work.
+
+\subsection{The Chase Procedure}
+\index{Chase Procedure!for FDs}
+
+If we have an attribute set $R$, an FD set $F$ over $R$ and a relation
+$r$ which does not satisfy $F$ ($r \not\models F$) we can use the
+chase procedure to modify $r$ so that it satisfies $F$. This technique
+is known as the chase, introduced in \cite{mms79} and generalised in
+\cite{bv84}. 
+
+{\renewcommand{\baselinestretch}{1}
+\begin{figure}[ht]
+\fbox{\begin{minipage}{16cm}
+\begin{algorithm}[{\rm CHASE}($r$, {\rm F})]\label{alg:chase}
+\begin{rm}
+\begin{tabbing}
+t1\=t2\=t3\=t4\=t5\= \kill \\
+\na.  \> \> {\bf begin} \\
+\sa.  \> \> \> Result := $r$; \\
+\sa.  \> \> \> Tmp := $\emptyset$; \\
+\sa.  \> \> \> {\bf while} Tmp $\not=$ Result {\bf do} \\
+\sa.  \> \> \> \> Tmp := Result; \\
+\sa.  \> \> \> \> {\bf if} $\exists X \to Y \in$ F and $\exists t_1, t_2 \in$ Result such that $t_1$[X] = $t_2$[X] but $t_1$[Y] $\not=$ $t_2$[Y] {\bf then} \\\sa.  \> \> \> \> \>  $\forall A \in$ Y$-$X, $t_1$[A], $t_2$[A] := max($t_1$[A], $t_2$[A]); \\
+\sa.  \> \> \> \> {\bf end if} \\
+\sa.  \> \> \> {\bf end while} \\
+\sa. \> \> \> {\bf return} Result;  \\
+\sa. \> \> {\bf end.}
+\end{tabbing}
+\end{rm}
+\end{algorithm}
+\caption{\label{rev:fd_chase} The Chase procedure for FDs}
+\end{minipage}}
+\end{figure}
+}
+
+The chase procedure has applications in theorem proving akin to
+tableau methods. We can discover the closure of a set of attributes
+$X$ by creating a two-tuple relation which agrees on $X$ and disagrees
+on all other attributes. After the chase procedure halts (proven to
+occur in \cite{mms79}) the agreement set in the relation $r$ consists
+of exactly the closure of $X$.  We illustrate this with a small
+example for the FD set $F = \{ T \to H, H \to R \}$ and we wish to
+obtain the closure of $T$, $T^+$.
+
+
+{\line
+\begin{table}[ht]
+\begin{minipage}[b]{6cm}
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline
+ T & H & R \\ \hline
+ 2 & 1 & 1 \\
+ 2 & 2 & 4 \\  \hline
+\end{tabular}
+\end{center}
+\caption{\label{tab:befcha}Before the chase}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{6cm}
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline
+ T & H & R \\ \hline
+ 2 & 2 & 4 \\  \hline
+\end{tabular}
+\end{center}
+\caption{\label{tab:aftcha}After the chase, $T^+$ = $THR$}
+\end{minipage}
+\end{table}
+}
+
+In Chapter~\ref{chap:numdep} we generalise the concept of
+the chase to cover NDs and in Chapter~\ref{chap:consistency} we extend it
+to accept relations which contain indefinite information. Examples of
+the chase in use are given in \cite{databasefound,Mann92}.
+
+
+\subsection{Numerical Dependency Theory}
+\index{Numerical Dependency}
+\index{Cardinality Constraint}
+\index{Branching Dependency}
+\index{Scalability!of NDs}
+\index{Boolean Dependency}
+
+\cite{gm85a,gm85b} introduced the concept of numerical dependencies as
+extensions to the relational model for providing the database designer
+with additional flexibility.  They have a clear intuitive semantics
+which can easily be accommodated for many database representation
+issues.  
+\begin{definition}[Numerical dependency]
+\begin{rm}
+A {\em numerical dependency} over R (or simply an ND)
+is a statement of the form X $\to^k$ Y, where X, Y $\subseteq$ R and $k \ge 1$.
+\end{rm}
+\end{definition}
+\medskip
+
+N {\em is  a set of NDs over } R and X $\to^k$ Y 
+{\em is a single ND over } R, with $k \ge 1$.
+Intuitively, an ND X $\to^k$ Y is satisfied in a definite relation $s$ over R,
+if each each X-value in $s$ is associated with at most $k$ Y-values in $s$;
+when $k = 1$ then the ND X $\to^1$ Y reduces to the FD X $\to$ Y. The
+satisfaction of X $\to^k$ Y with $k > 1$ is equivalent to the
+satisfaction of a Functional Independency \cite{gl90}.
+
+\index{Numerical Dependency Satisfaction}
+
+\begin{definition}[Satisfaction of an ND]\label{def:sat-nd}
+\begin{rm}
+Given a definite relation $s$ over R
+an ND X $\to^k$ Y is {\em satisfied} in $s$,
+denoted by $s \models$ X $\to^k$ Y, whenever
+$\forall t_1, t_2, \ldots, t_k, t_{k+1} \in$ s, if 
+$t_1$[X] = $t_2$[X] = $\ldots$ = $t_k$[X] = $t_{k+1}$[X] then 
+$\exists i,j$ such that $1 \le i < j \le k+1$
+and $t_i$[Y] = $t_j$[Y].
+A set of NDs N is {\em satisfied} in $s$,
+denoted by $s \models$ N, whenever
+$\forall$ X $\to^k$ Y $\in$ N, $s \models$ X $\to^k$ Y.
+\end{rm}
+\end{definition}
+
+We now define cardinality constraints and show in
+lemma~\ref{rev:lem_cc} that cardinality constraints restricted only by
+upper bounds are equivalent to NDs with empty left hand sides.
+
+\begin{definition}[Cardinality Constraint]
+\begin{rm}
+A {\em cardinality constraint} over R (or simply an ND) for an
+attribute set $X \subseteq R$
+is a statement of the form $c_1 \le \mid \pi_X(R) \mid \le c_2$ where
+$c_1$ and $c_2$ are constants. A cardinality constraint is satisified
+if the formula holds. The formula may be restricted to just having
+either an upper ($c_2$) or lower ($c_1$) bound.
+\end{rm}
+\end{definition}
+\medskip
+
+Cardinality constraints were introduced in \cite{kan80}. \cite{lew93}
+surveys cardinality constraints and shows their widespread application
+in numerous data models. 
+
+\begin{lemma}\label{rev:lem_cc}
+\begin{rm}
+A cardinality constraint $\mid \pi_X(R) \mid \le c$ is equivalent to
+the ND $\emptyset \to^c X$.
+\end{rm}
+\end{lemma}
+
+
+{\em Proof.} Trivial, given that $\emptyset$ is a unique
+partition. $\Box$
+
+Cardinality constraints are applied, as restricted NDs, in
+Chapter~\ref{chap:tempres}. Numerical Dependencies were themselves generalised to branching
+dependencies in \cite{dks92}. 
+\medskip
+
+\begin{definition}[Branching dependency]\index{Branching Dependency}
+\begin{rm}
+A {\em branching dependency} over R (or simply a BD)
+is a statement of the form $A \stackrel{(p,q)}{\rightarrow} B$ that
+states that  there do not exist $q+1$ different tuples such that for
+p different values there are not $q+1$ different values. 
+\end{rm}
+\end{definition}
+
+Note the special  cases of branching dependencies
+where $p = 1$ such that the branching dependency is  $A 
+\stackrel{(1,q)}{\rightarrow} B$
+is equivalent to a standard numerical dependency and when
+$ p = 1, q = 1$ such that  $A \stackrel{(1,1)}{\rightarrow} B$ then
+this is equivalent to a functional dependency. The following is a
+restatement of lemma 3.2 of \cite{dks92}. Based on this lemma we do
+not consider BDs any further within the mining process due to all
+cases satisfying NDs.
+
+\begin{lemma}\label{rev:lem_bd}
+\begin{rm}
+Any BD $A \stackrel{(p,q)}{\rightarrow} B$ satisfied in a relation $r$
+also satisfies $A \stackrel{(1,q)}{\rightarrow} B$
+\end{rm}
+\end{lemma}
+
+{\em Proof.} No single partition on $A$ contains more than $q$
+different values, therefore the $r \models$ A $\to^q$ B. $\Box$
+
+
+We now present an
+example of the application of NDs in table~\ref{tbl:1.0}  in a
+teaching relation $PLAN$(Lecturer,Course).  The intended semantics for
+this relation is that a lecturer can teach up to, but not more than, 2
+different courses. 
+ 
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{||l|l||} \hline
+Lecturer & Course \\ \hline
+ Mark &  C320 \\
+ Robin & B11a \\
+ Robin & B151 \\ 
+ Mark  & B151 \\ 
+ Sean  & C340 \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{tbl:1.0} relation $PLAN$(Lecturer,Course)} 
+\end{table}
+
+
+\begin{definition}[Partitioning of a relation]\label{def:nd_part}
+\begin{rm}
+The {\em partitioning} of a relation $r$ with respect to the ND 
+X $\to^k$ A, is the partition $\{{\cal B}_1, {\cal B}_2, \ldots, {\cal B}_w\}$
+of $r$, such that for each X-value, $x \in \pi_{\rm X}(r)$, 
+there exists exactly one {\em block} ${\cal B}_i$ in the partition 
+having the single X-value $x$, i.e. such that $\pi_{\rm X}({\cal B}_i) = \{x\}$.
+We denote the block whose X-value is $x$ by $r[{\rm X}, x]$.
+The projection on X of ${\cal B}_i$ is $\pi_{\rm X}({\cal B}_i) = \{
+t_{\rm X} \mid t \in {\cal B}_i \}$. 
+\end{rm}
+\end{definition}
+
+In the sequel we frequently refer to partitions on attributes,
+implying the semantics of this definition.
+We define the {\em size} of a set or NDs N to be the number of attributes 
+appearing in N including repetitions.
+
+\medskip
+
+In Chapter~\ref{chap:numdep} we focus on the theory of NDS, NDs for
+data mining and for NDs in a database design context. We now move on
+to a general outline on indefinite information in databases, the
+background for the work on the consistency problem in Chapter~\ref{chap:consistency}.
+
+\subsection{Indefinite Relations}\label{subsec:rev_indef}
+\index{Indefinite Information}
+\index{Incomplete Information}
+
+
+Lipski's 1979 paper \cite{lip79} formalised many of the methods for 
+representing incomplete information within a database.  Incomplete
+information theory must formalise the relationship between the external
+and internal representations of knowledge, the former corresponding to
+the real world and the latter to the database representation of it.
+\cite{databasefound} define a database with incomplete information as a set
+of possible worlds where the table contains null values that may be replaced
+by domain value sets. An incomplete database, given a table $T$ is
+defined by \cite{databasefound}
+as $rep(T) = \{v(T) |  v$  is a valuation of variables in  $T \}$\\
+
+
+OR-objects \cite{inv91} are a generalisation of Marked Nulls. An unmarked null
+value states that the value does exist but is at present
+unknown. Nulls values with names allow for comparison between nulls.
+Additionally, OR-objects can be viewed as expressing disjunction which
+can be applied in many applications .  Frequently a particular
+attribute value may be known to be one of a number of options though
+it is unknown precisely which one, possibly until a later date or
+inference from data dependencies which are known to hold.  In these
+instances the use of OR-Objects provide such a suitable
+non-deterministic mechanism.  For example we may wish to express the
+fact that {\em Ship 23} sets sail from either {\em Dover} or {\em
+Portsmouth}.  This is achieved using an OR-object, $o_1$, inside a
+tuple, such as t({\em Ship 23},$o_1$) with the domain of $o_1$, Dom($o_1$) = $\{Dover,Portsmouth\}$ to represent the disjunction.
+OR-objects are introduced in \cite{inv91} where formalisations are
+presented for querying databases that contain OR-objects either
+against the possible worlds or the database, containing OR-objects,
+itself and details of a practical application for scheduling,
+discussed in chapter~\ref{chap:consistency}, are provided.
+
+\begin{definition}[OR-Object]
+\begin{rm}
+An OR-object, $o_1$, refers to a finite domain set of values, entitled
+$Dom(o_1)$, that is a disjunctive set where each element may replace
+the OR-object to obtain an instance, or possible world, of the
+database. A database containing OR-objects is called an OR-database.
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[Possible World]
+\begin{rm}
+A possible world W of an OR-database  D with a set of OR-objects $O$
+is obtained by replacing every OR-object $o \in O$ with a value from the
+respective $Dom(o)$.
+\end{rm}
+\end{definition}
+
+\begin{definition}[Conforming World]
+\begin{rm}
+A possible world W of an OR-database  D is conforming with respect to a set of
+functional dependencies $F$ if it satisfies every $f \in F$.  If a world W violates
+at least one   $f \in F$ it is said to be {\em non-conforming}.
+\end{rm}
+\end{definition}
+
+\begin{definition}[Redundant Element]
+\begin{rm}
+A member $c \in Dom(o_1)$ of an OR-object $o_1$ is redundant under a set of
+functional dependencies $F$ if every possible world that assigns $c$ to $o$ is
+a non-conforming possible world with respect to $F$.
+\end{rm}
+\end{definition}
+
+\cite{vn95} present a number of algorithms using OR-objects to improve query 
+optimisation processes via the processing of OR-objects with respect to the
+set of functional dependencies $F$ that hold for a database. 
+
+\begin{definition}[Certain Answer]\label{def:c_an}
+\begin{rm}
+Given a query $q$, an OR-database $D$, a tuple $t_i$ is a {\em certain
+answer} to a query if it is the answer to the query in every
+possible world of the database $D$.
+\end{rm}
+\end{definition}
+
+The notion of a certain answer, defined in ~\ref{def:c_an}, when
+FDs are imposed on a database, is restricted to only those
+world which are conforming.
+
+\begin{definition}[Good Classes of OR-databases]
+\begin{rm}
+Given a class $D$ of databases and a set $F$ of functional dependencies,
+$D$ is good for $F$ is every D $\in D$ there are no OR-objects in the
+database $D$ in any of the attributes $ATT(F)$.
+\end{rm}
+\end{definition}
+
+An $O(n^2)$ algorithm is presented that takes a database good for $F$, and
+pre-processes $D$ such that the resulting database has only conforming
+possible worlds.  It is said to {\bf fully incorporate} any set of FDs in
+a database $D$ if the database is good for the set of FDs.\\
+
+
+{\line
+\begin{table}[ht]
+\begin{minipage}[b]{7cm}
+\begin{center}
+\begin{tabular}{|c|c|} \hline
+A & B  \\ \hline
+$o_1$ & 3  \\
+2 & 4  \\
+5 & $o_2$  \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{tbl:orobj} OR-object indefinite relation} 
+\end{minipage}
+\hfill
+\begin{minipage}[b]{7cm}
+\begin{center}
+\begin{tabular}{|c|c|} \hline
+A & B  \\ \hline
+$\{1,2\}$ & 3  \\
+2 & 4  \\
+5 & $\{3,6\}$  \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{tbl:indef1} Indefinite relation} 
+\end{minipage}
+\end{table}
+\begin{table}[ht]
+\begin{minipage}[b]{7cm}
+\begin{center}
+\begin{tabular}{|c|c|} \hline
+A & B  \\ \hline
+2 & 3  \\
+2 & 4  \\
+5 & 3  \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{tbl:noncon1} Non-conforming possible world} 
+\end{minipage}
+\hfill
+\begin{minipage}[b]{7cm}
+\begin{center}
+\begin{tabular}{|c|c|} \hline
+A & B  \\ \hline
+1 & 3  \\
+2 & 4  \\
+5 & 3  \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{tbl:conform1} conforming possible world} 
+\end{minipage}
+\end{table}
+}
+
+
+In Tables~\ref{tbl:orobj} and~\ref{tbl:indef1} we see indefinite data
+in a relation. The or-object models uses the label $o_1$ and $o_2$ to
+denote or-object sets, equivalent to $\{1,2\}$ and $\{3,6\}$,
+respectively. Tables~\ref{tbl:noncon1} and ~\ref{tbl:conform1}
+represent non-conforming and conforming possible worlds for the FD $A
+\to B$. Note that in Table~\ref{tbl:noncon1} the ND $A \to^2 B$ is satisfied.
+
+The algorithm maintains a cumulative domain of all the OR-objects which
+are functionally equivalent under an FD, so they are partitioned for
+agreement on the attributes in the body of an FD and each partition
+has an intersected domain of all OR-objects within the attributes
+on the right hand side of the FD. In the context of this thesis we
+refer to OR-objects as indefinite cells; theis removes the need to
+distinguish OR-objects as either mutable or persistent object identifiers.\\
+
+Related
+work on FDs in relations with incomplete information, where
+the incompleteness is that of a $NULL$ value is presented in
+\cite{ll98,lv97}. 
+Another interpretation for indefinite information semantics in the
+relational model is that of it being a probabilistic relation, which
+we now formalise. A probabilistic interpretation allows for the
+likelihood of possible worlds to be easily calculated.
+
+
+\begin{definition}[Probabilistic relation]
+\begin{rm}
+A {\em probabilistic tuple} $t$ over R 
+is a total mapping from R into ${\cal P}({\cal D})$ 
+such that $\forall A \in$ R, $t(A) \in {\cal P}({\cal D})$.
+A tuple $t$ over R is {\em definite} if 
+$\forall A \in$ R, $\mid t(A) \mid = 1$, i.e. $t(A)$ is a singleton.
+
+\smallskip
+
+A {\em probabilistic relation} over R 
+is a finite (possibly empty) set of probabilistic tuples over R.
+A relation $r$ over R is {\em definite} if all of its tuples are definite.
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[The probability of a tuple]
+\begin{rm}
+The probability of a value $v \in S$, where  $S \in {\cal P}({\cal D})$,
+denoted by $p_S(v)$, is $\frac{1}{\mid S \mid}$.
+
+\smallskip
+
+The set of {\em possible} definite tuples of a probabilistic tuple $t$, 
+denoted by POSS($t$), is the set of tuples given by $\{u \mid u$ is
+definite and $\forall A \in R, u[A] \in t[A]\}$.
+
+\smallskip
+
+The {\em probability} of a tuple $u \in$ POSS($t$), denoted by $p_t(u)$
+is given by $p_t(u) = \prod_{A \in R} p_{t[A]}(u[A])$. 
+\end{rm}
+\end{definition}
+
+
+We observe that $\sum\limits_{u \in {\rm POSS}(t)} p_t(u) = 1$. 
+
+\begin{definition}[The probability of a relation]
+\begin{rm}
+The set of {\em possible} relations (or {\em possible worlds}) 
+of a relation $r = \{t_1, t_2, \ldots, t_n\}$, denoted by POSS($r$),
+is the set of relations given by
+$\{s \mid s = \{u_1, u_2, ..., u_n\}$ and 
+$u_1 \in {\rm POSS}(t_1)$, $u_2 \in {\rm POSS}(t_2)$,
+$\ldots u_n \in {\rm POSS}(t_n)\}$.
+
+The {\em probability} of a relation $s \in$ POSS($r$),
+denoted by $p_r(s)$, is given by 
+\begin{displaymath}
+p_r(s) = \prod_{u \in s} p_t(u), \mbox{ where } u \in {\rm POSS}(t) 
+\mbox{ and } t \in r. 
+\end{displaymath}
+\end{rm}
+\end{definition}
+\medskip
+
+We observe that $\sum\limits_{s \in {\rm POSS}(r)} p_r(s) = 1$. 
+
+
+\medskip
+
+We now motivate NDs and indefinite information by providing an example
+where
+the traditional FD is too strict and a {\em weaker} integrity constraint
+is required. For this we claim that the numerical dependency (ND) \cite{gm85b} is a worthwhile generalisation.
+Table~\ref{tbl:1.0} shows how we might
+want to represent indefinite information in a teaching relation 
+$PLAN$(Lecturer,Course).  Irrespective of whatever courses Mark and Robin
+ decide to teach no definite relation extracted from $PLAN$
+will satisfy the FD $Lecturer \to Course$ though all satisfy the 
+ND $Lecturer \to^2 Course$. This may be the desired goal of the 
+database designer who wishes to represent the fact that a Lecturer can
+teach up to two courses in a year. NDs are generalisations of FDs which
+allow an attribute set to uniquely determine up to $k$ different attribute
+set values, noting that $k = 1$ in the case of FDs. For any given FD
+set F and a relation r the set of all possible approximations forms a
+complete lattice \cite{dp90}; this is the basis for a metric we define
+and use for how well an ND set approximates F.
+
+{\line
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{||l|l||} \hline
+Lecturer & Course \\ \hline
+ Mark & \{B11a,C320\} \\
+ Robin & B11a \\
+ \{Robin,Mark\} & B151 \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{tbl:1.0} An indefinite relation $PLAN$} 
+\end{table}
+}
+
+Finally, we bring to the attention of the reader the additivity
+problem in incomplete databases, containing NULL values only, covered
+in \cite{ll98b}. \cite{ll98b} discusses restrictions on the set of FDs
+which ensure that satisfaction in possible worlds is
+additive. Additivity in indefinite relations is not relevant.
+
+\begin{definition}[Additivity Problem]
+\begin{rm}
+In an incomplete database a set of dependencies, say $\Sigma$, may be satisfied
+and there exists a sequence of updates which modify one null value into a 
+nonnull one, so that the final state is a complete database which satisfies
+$\Sigma$.  The additivity problem is the problem that there may not exist
+a single sequence of updates that leads to one possible world which satisfies
+all of the dependencies in $\Sigma$.  $\Sigma$ may be viewed by the user
+as contradictory.
+\end{rm}
+\end{definition}
+
+
+
+
+\subsection{Temporal Databases and Temporal Dependencies}\label{subsec:temdat}
+\index{Temporal Data Model}
+			\index{Temporal Data Dependency}
+			\index{Dynamic Dependency}
+			\index{Transition Constraint}
+
+There are a number of different methods for modelling temporal data
+within the relational model; not least due to the fact that there may be
+many different applications and requirements of a temporal
+database. These may range from financial data storage to recording
+sales data or simply storing dates for birthdays. 
+
+\medskip
+
+There are two prime modes for interpreting time in a relation; {\em
+valid} or {\em transaction} time. Valid time represents the time over
+which the tuple to which it is attached is true within the
+database. The transaction time attached to a tuple is the time at
+which  the tuple was entered into the database. In the past this may
+have been represented implicitly though with the increase of data
+mining and data warehousing systems this is more likely to now be
+explicit also. We assume
+time, within the context of this thesis, to be valid time. We also
+assume that the reader is familiar with the interval representation of
+time \cite{all84}. The other key issue in temporal databases (and also
+temporal reasoning and planning research) is that of temporal
+granularity \cite{bwj96}. We are not concerned specifically with
+granularity problems though we refer to problems that granularity
+issues might pose as and when they may occur.
+
+\medskip
+
+There has been a growing body of work on dependencies in the temporal
+domain. In a temporal database model dependencies extend to cover
+dynamic behaviour within the database, dynamic implying changes over
+time.  As such, a temporal dependency may
+restrict the evolution of the database. Much work on temporal
+dependencies makes use of temporal logic \cite{eme90,mp92} which we
+assume the reader is familiar with. The field of temporal dependency
+satisfaction is directly relevant to temporal data mining. The
+temporal dependencies of \cite{Via87,wij95} may be mined for similarly
+to standard FDs.
+
+
+\cite{Via87,Via88} introduced dynamic functional dependencies. We
+now define an Action Relation so that we can easily present dynamic FDs.
+
+\begin{definition}[Action Relation]
+\begin{rm}
+Given two relations $R_1, R_2$ such that $R_2$ is the relation
+generated after a modification (insertion, deletion, and/or update) 
+is applied to $R_1$ we form the action relation $R$ from $R_1$ and $R_2$.
+ For all attributes $A \in R_i$ we add a subscript
+$i$ to each attribute so that it corresponds with the temporal state
+it is in and we then create the {\em action relation} $R$ where
+$R = \{ t \times \delta(t) \mid t \in R_1 \}$ for all tuples $t$ in $R$ where
+$\delta (t) $ is the updated tuple $t \in R_2$. 
+\end{rm}
+\end{definition}
+
+\begin{definition}[Dynamic Functional Dependency (DFD)]
+\begin{rm}
+A dynamic functional dependency $A \to B$ across states $R_1, R_2$
+is an FD over the action relation $R$ formed by $R_1$ and $R_2$ such
+that for each $B_i \in B$ we have $AB_i \cap R_1 \not= \emptyset$ and 
+$AB_i \cap R_2 \not= \emptyset$.
+\end{rm}
+\end{definition}
+
+Note that the states formed by the action relation need not be contiguous.
+An example presented in \cite{Via87} is $MERIT_1 SALARY_1 \to SALARY_2$,
+implying that the old merit and salary of an employee determine the 
+new salary. We also note that dynamic dependencies could be easily
+extended to dynamic numerical dependencies.  Examples for dynamic
+numerical dependencies might include $MANAGER_1 GRADE_1 \to^k EMP_2$, stating that the grade of a manager determines subsequently the number
+of employees he is allowed to manage, parhaps as part of a career
+development rule.  We assume the
+interim time period between the two states is of a fixed length.
+
+\medskip
+
+Another extension for dynamic NDs may be a change of the branching
+factor in an ND being determined by old dependencies.
+($MANAGER_1 GRADE_1 \to^k EMP_1$) $\to$  ($MANAGER_2 GRADE_2 \to^m EMP_2$),
+stating that the grade of a manager taken together with the number of employees
+he currently manages ($k$) determines subequently the number, $m$, of 
+employees he is allowed to manage taken together with his grade. 
+This type of numerical dependency is 
+different from a functional dependency in that the dependency itself is
+modified based upon the structure of the data in a previous state. We
+do not consider these possible dependencies further.
+
+ \cite{wij95} defines two temporal dependencies using operators based
+ on standard temporal logic:
+\begin{enumerate}
+\item A {\bf Temporal Functional Dependency} X $G$ Y which is satisfied
+at time $i$ if X $\to$ Y holds in all states from $i$ to $maxtime$.
+\item A {\bf Dynamic Functional Dependency} X $N$ Y which is satisfied
+at time $i$ if X $\to$ Y holds in $i, i + 1$ or X $\to$ Y holds if $i = maxtime$.
+\end{enumerate}
+
+\cite{jss96} introduce the TFD, X $\stackrel{\mbox{\tiny{T}}}{\to}$ Y, which
+holds in a temporal relation schema if for all snapshots the FD X $\to$ Y
+holds. Note that X $\stackrel{\mbox{\tiny{T}}}{\to}$ Y applies only to
+temporal data models.
+
+\cite{gl95} introduces {\bf transition graphs} for analysing state sequences
+where the path is followed corresponding to the edge labels which
+hold in the states of the sequence. Transition graphs may be used to 
+recover from information gaps, which may occur from either an update or
+a delete, providing the {\em time instants} fill the gap exactly and that
+the loop label is valid when the gaps meet. These graphs are labelled
+such that the transitions within a sequence must satisfy the labels as 
+constraints.
+
+
+\cite{cho94} introduces the use of linear temporal logic to represent
+integrity constraints in a database. Temporal 
+integrity constraints can be easily stated though there is no notion of
+any {\em transition constraints}. There are numerous methodologies for
+temporal dependency representations. We do not directly consider these
+directly in our work though our sequence logic allows us to view
+specific formulas as NDs holding over certain time periods, detailed
+in Chapter~\ref{chap:templog}.
+
+
+\subsection{Time Series and Temporal Databases}
+
+As we shall see, much of our temporal work has a relationship with
+time series analysis. We now introduce time series and formalise the
+relationship with temporal databases. The dichotomy between temporal
+database research and time series analysis, partially addressed in
+\cite{smd95}, is now disappearing given the incorporation of data
+mining and statistical functions into DBMS and related increases in
+querying and computation speed.
+
+
+
+\begin{definition}[Time Series]
+\begin{rm}
+A sequence $\{ x_n : 0 \le n \le N \}$ of observations, indexed by the time at which they
+were taken. These may be modelled by random processes.
+\end{rm}
+\end{definition}
+
+
+Time series analysis usually requires accounting of the order of observations; which
+are in general not independent implying that forecasting is possible.  A
+deterministic time series is one which can have its future predicted exactly, though it
+is obviously of minimal worth.  In practice, time series occur frequently in the 
+economic domain, for example, in successive share prices and there exist numerous
+meteorological and geological time series. 
+
+Essentially, any time series analysis attempts to predict $y(N + 1), y(N + 2),$ and 
+so on, using the values in the sequence $y(1), y(2), \ldots, y(N)$.   
+The quality of predictions in a time series context is given by:
+\begin{displaymath}
+\frac{\Sigma_t (observation_t - prediction_t)^2}
+{\Sigma_t (observation_t - observation_{t-1})^2}
+\end{displaymath}
+
+If the above is less than one then this implies an improvement over
+the random walk.  A clear overview of many of the uses of time series
+is presented in \cite{wg94} which
+also denotes the three main aims of time series analysis as being:
+\begin{description}
+\item[Forecasting] Attempts to predict short term system evolution.
+\item[Modelling] Attempts to describe long term system behaviour.
+\item[Characterisation] Attempts  to determine the fundamental properties
+of a system.
+\end{description}
+
+\medskip
+
+Given a relation over $R = ABCDT$, where $T$ is time, and there exists an
+attribute over a numerical domain, say A, and each tuple occurs with a
+constant time between each point then $\pi_A(R)$ will represent a time
+series. If each tuple does not occur at constant times the relation
+may be {\em folded} or {\em unfolded} ot obtain records over fixed intervals.
+
+\section{Dependency and Temporal Data Mining}\label{sec:datmin}
+			\index{Knowledge Discovery!Goals}
+			\index{Knowledge Discovery!Outline}
+			\index{Machine Learning!and Data Mining}
+			\index{Pattern Discovery}
+			\index{Data Warehouse}
+
+
+We now move on to present the background on data mining related to
+this thesis. Firstly, we introduce functional dependency data mining,
+before considering its relationship with ND approximations in Chapter~\ref{chap:numdep}. We discuss similarity
+measures for FDs, sampling procedures for databases and temporal data
+mining, in particular temporal rule discovery research.
+
+
+\subsection{Functional Dependency Data Mining}\label{subsec:fdmining}	
+\index{Dependency Data Mining}
+\index{Fuzzy Functional Dependency}
+\index{Functional Dependency Data Mining|see{Dependency Data Mining}}
+			\index{Probabilistic Data Model}
+
+
+Dependency inference is a key area in the rapidly developing field of data mining. This section focusses on the inference of functional dependencies.  
+Dependency mining is also concerned with inference of inclusion, join,
+numerical, multivalued and algebraic dependencies, not examined in
+this thesis. In recent years work has progressed from the inference of
+FDs in relations to methods to infer approximations to FDs, based on
+the real-world requirements with many large databases containing noise.
+
+
+\begin{definition}[Dependency Inference problem ]
+\begin{rm}
+Given a relation $r$,  the  dependency inference problem is is to 
+find a small (if not the smallest possible) {\em cover} for the set of 
+all dependencies in $r$.
+\end{rm}
+\end{definition}
+
+
+The functional dependency inference problem,  initially described in
+\cite{mr86}, is to find a set of functional dependencies equivalent to
+the set of all functional dependencies that hold for a given relation
+$r$.  
+
+\begin{lemma}\label{rev:lem_fd_att}
+\begin{rm}
+A relation schema $R$ with $\mid R \mid = n$ has $n2^{n-1}$ possible
+non-trivial FDs.
+\end{rm}
+\end{lemma}
+
+
+{\em Proof.} For each attribute $X \in R$ there are $2^{n-1}$ attribute
+sets in $R \backslash \{ X \}$. $\Box$
+
+As lemma~\ref{rev:lem_fd_att} shows, there is an exponential number of
+possible FDs in the number of attributes which may hold in a
+relation. We note however that many real-world databases have numerous
+attributes, for example \cite{bkm98}. However, in a relation
+contiaining, say, 11 attributes it is highly likely that $AB \ldots GH
+\to I$ is satisfied funtionally or close to functionally. We therefore
+suggest restricting the left hand side of attributes to a reasonable number.
+
+To test for satisfaction of a functional dependency in a
+relation requires O($n^2$) comparisons, where n is the number of
+tuples within the relation.  For a set of functional dependencies this
+is computationally expensive and so techniques for approximating the
+set of functional dependencies are discussed, presented in
+\cite{mr94, km95, psm93, sf93,  schl93, she91}. Schlimmer \cite{schl93}, Savnik and Flach \cite{sf93} and Piatetsky-Shapiro and 
+Matheus \cite{psm93} use probabilistic measures .  \cite{sf93} 
+infer dependencies from a database using dependencies which are known to
+be invalid in the database as well as the valid dependencies and \cite{HS95}
+provide a coverage of imprecise inference within a database using fuzzy 
+dependencies. Recently \cite{hkp98} looked at improving the efficiency
+of FD data mining using a partitioning methodology.
+
+\medskip
+
+Uses of dependency inference include database design, query optimisation,
+determinations and various constraint satisfaction procedures.  \cite{bb95} discusses the problem of dependency inference within real world databases where a set oriented interface is detailed. Machine learning can be said to be the inference of general rules from instances of data and, as such, dependency inference is an attractive branch given that that for the instances of data, the database itself, there always exists a concept which fits the data set, namely the dependency set \cite{mr94}.
+\cite{mr86} show the dependency inference problem to be the converse of
+the generation of an Armstrong relation for a given set, $\Sigma$, of
+functional dependencies. \cite{bb95} notes the three possible approaches to the dependency
+inference problem:
+\begin{enumerate}
+\item Enumerate and verify all possible data dependencies
+\item Infer as much as possible and prevent unnecessary queries.
+\item Draw inferences from the verified and invalid data dependencies
+\end{enumerate}
+
+In \cite{km95} the problem described is to find the set of functional dependencies in a {\em cover} $r$ where the set of FDs for r, where r is a minimal set, are equivalent to the set of FDs for the relations in R, the set for the whole database.   Naive algorithms to do this are in the worst case exponential in the size of the smallest cover of the dependency set, as presented in \cite{mr94}.
+
+Therefore \cite{km95} suggest an approximation algorithm.  The prime results of
+their work are:
+\begin{enumerate}
+\item Measures on the error of a dependency $f$ holding in a relation $r$.
+\item An algorithm for finding, with high probability, a set of FDs, $F$, such
+that $d(F, dep(r)) < \epsilon$, where $d$ is a distance measure and $\epsilon$ is the allowed error.  The algorithm which Kivinen and Mannila have implemented
+works in polynomial time with respect to $\frac{1}{\epsilon}$.\\
+\end{enumerate}
+
+Of particular interest are the dependency error measures which are
+used, to which we refer to in section~\ref{subsec:rev_fd_sim}.
+
+
+\cite{mr92} present an algorithm for dependency inference based upon
+hypergraph transversals, or hitting sets. \cite{mr92} state that it is one of the aims of dependency inference to
+obtain algorithms which work in polynomial time in the number of 
+different minimal left-hand sides of each attribute. \cite{bmt89,Mann92}
+also presents algorithms using the behaviour of disagreement sets to
+optimise the discovery process, as does \cite{sf93}.
+
+\cite{sf93} provides a bottom-up inductive approach with a view to automating data dependency creation via discovery of the dependencies from the existing relations within the database.  \cite{sf93} defines the process of inducing functional dependencies using {\em invalid dependencies}, which will all be contradicted by a given relation.
+
+\begin{definition}[Invalid Dependency]
+\begin{rm}
+A functional dependency is {\bf invalid} in a relation $r$
+if it is contradicted by two or more tuples within $r$.
+\end{rm}
+\end{definition}
+
+\begin{definition}[Positive Cover]
+\begin{rm}
+A set of dependencies F is a positive cover for relation r $iff$
+\begin{enumerate}
+\item All functional dependencies are of the form $X \rightarrow A$ where A is
+a single attribute.
+\item For all functional dependencies that are valid in r there is a
+more general dependency in the positive cover so that if $X \subseteq
+Y$ then $X \rightarrow A$ is more general than $Y \rightarrow A$.
+\end{enumerate}
+\end{rm}
+\end{definition}
+
+
+\cite{sf93} presents the notion of negative cover so that every pair
+of tuples need not be examined for contradiction of a dependency which
+allows inference of all dependencies contradicted by the relation.
+
+\begin{definition}[Negative Cover]
+\begin{rm}
+A set of invalid dependencies F is a negative cover for relation r $iff$
+\begin{enumerate}
+\item All invalid dependencies are of the form $X \rightarrow A$ where A is
+a single attribute.
+\item For all invalid dependencies in r there is a more specific
+dependency in the positive cover so that if $X \supseteq Y$ then $X \rightarrow A$ is
+more specific than $Y \rightarrow A$.
+\end{enumerate}
+\end{rm}
+\end{definition}
+
+Invalid dependencies are identified by comparing each pair of tuples
+within a relation and splitting those attributes into two partitions,
+one for equivalent attribute values the other for non-equal attribute
+values.  The algorithm in \cite{sf93} specialises invalid dependencies
+by adding additional attributes to the left hand side, guided using
+the invalid dependencies within the negative cover, therefore
+improving efficiency and applicable to real world databases. A problem
+with this approach is the removal of meaningless and useless data, the
+former relating to trivial dependencies and the latter relating to
+information  that can be deduced using Armstrong's axioms.
+
+\cite{bb95} present procedures for FD discovery in standard SQL. The
+results are shown to be poor with respect to efficiency but the
+methods can be applied to large databases and SQL is emmenently portable.
+
+J. Schlimmer presents a search algorithm \cite{schl93} for the induction of 
+determinations, equivalent to FDs, expressed within a decision tree,
+where subtrees at
+the same level test for the same property and so the algorithm
+introduced is based on forming a decision tree, of minimal
+size, of determinations from the data. A determination is  validated
+by checking that all domain elements
+map to exactly one element in the range.  Schlimmer examines the
+problem of handling non-functional determinations and provides
+three methods for dealing with them as follows (1) maintain an exception list, 
+ (2) specialise the representation and eliminate exceptions, and (3)
+follow an approximate representation.
+
+The third option may be applicable if numerical determinations 
+(dependencies) were desired as a property of the data.  Schlimmer also
+presents a {\em reliability measure} for the problem of  deciding how
+much data is required to verify a determination.  This is proportional
+to the percentage of values that have been observed infrequently
+for a particular determination.  Based on the reliability measure and
+axioms of determinations (similar to axioms for functional dependencies)
+several pruning rules are introduced that can be applied to the domain
+of the function (usually a combination of attributes in a relation).
+
+Fuzzy FDs \cite{bdp94,hfs94} may also be viewed as approximations to FDs.
+A fuzzy weight can represent either the degree to which the tuple
+belongs in the relation or the global confidence level in the
+information that is stored in the tuple. To prevent multiple weights
+over $R$ for the same attribute it is assumed that weight is a special
+attribute and the FD $R \to Weight$ holds.  Fuzzy subsets can be
+viewed as a collection of weighted subsets. \\
+
+
+\subsection{Temporal Dependency Data Mining: A review}\label{subsec:temp_mine}
+			\index{Temporal Data Mining}
+
+A significant amount of work has been carried out on data mining
+within temporal databases. {\em Temporal Data Mining} generally takes
+the form of finding interesting patterns \cite{bt98} or rules
+\cite{dlm98,mt96}. Our approach uses a number of features, similar to
+and developed independently from
+previous work. We introduce these components followed by a brief
+outline of knowledge discovery research conducted on time series. It
+is important that the reader appreciates the highly disparate goals
+between our work (and the associated work presented here) and that of
+time series methodologies using neural network or connectionist architectures
+\cite{wg94,fc95}. Naively, we demarcate this from knowledge discovery
+research in that its goal is to create neural networks, using many
+different mechanisms, which successfully forecast the values of a time
+series. It is not concerned with how this is achieved. Alternatively,
+knowledge discovery research is user-oriented, attempting to provide
+understandable rules that a {\em data miner} can easily follow,
+without significant knowledge of statistics or time series analysis
+techniques. This may be said to be a key goal of our own research,
+presented in chapters~\ref{chap:templog} and~\ref{chap:tempresult}.
+
+\medskip
+
+Nearly all temporal data mining research breaks an input temporal sequence into
+subsequences. The ability to find a global model describing a sequence
+is nearly impossible \cite{end95} for any non-trivial sequence (or
+time series).
+
+\medskip
+
+\cite{mtv95,mt96,mt96b} define episodes for modelling event
+sequences. An event is a tuple with a timestamp attached. Also, $x$
+occurring within $[ t_1, t_2 ]$ where $t_1 \le t_2$ implies that x
+holds at all points $p$ where $t_1 \le p \le t_2$.
+
+\begin{definition}[Episode]
+\begin{rm}
+An episode is a conjunction $\wedge_{i=1}^k \phi_i (y_i,z_i)$ where
+$y_i,z_i$ are event variables and $\phi_i (y_i,z_i)$ is of the form
+$\alpha(x.A)$, $\beta(x.A,y.B)$ or $x.T \le y.T$ denoting a unary
+predicate on the domain of A, a binary predicate on the domain of A
+and B or a temporal relationship, respectively.
+\end{rm}
+\end{definition}
+
+
+\begin{definition}[Episode Rule]
+\begin{rm}
+An episode rule takes the form $P[V] \Rightarrow Q[W]$ where $P,Q$ are
+episodes and $V,W$ are real numbers denoting that if P occurs
+throughout the interval $[t_1,t_2]$ with $V \ge t_2 - t_1$ then Q
+occurs in $[t_1,t_3]$ with $W > t_3 - t_1$.
+\end{rm}
+\end{definition}
+
+Attached to each episode rule is a frequency of each episode occurring
+within a sequence. Therefore \cite{mt96} states the episode rule
+discovery task is to find all frequent episode rules. Obviously
+frequency may be specified by the user. We shall how properties
+discovered by our logic are related to issues of frequency in
+chapter~\ref{chap:tempresult}. \cite{mt96} also restrict the rule
+discovery task to serial or parallel episode discovery.
+
+\medskip
+
+\cite{pt96} claims to extend this work to the discovery of temporal
+logic patterns. This work simply uses temporal logic to represent
+episodes expressed in clausal form, for example $holds(stock) \to
+valueincrease(stock,25)$. We agree that temporal logic is an
+expressive and valuable mechanism for rule discovery though the
+implementation using datalog, given in \cite{pt96}, provides no
+results; if anything, this shows how we need to be careful of
+efficiency considerations when constructing data mining algorithms,
+particularly in the temporal domain.
+
+\medskip
+
+\cite{bt98} again uses temporal logic to discover patterns attached to
+a defined measure of {\em interestingness}, defined as the actual
+number of occurrences of a pattern exceeding the expected number of
+occurrences. This is equivalent to specifying a required frequency
+though it is enhanced by attaching probabilities to each event.
+However, with probabilities attached the discovery of  larger from smaller
+patterns becomes non-monotonic. Therefore, given a temporal logic
+pattern containing only $Before$ operators, the discovery of
+interesting patterns is shown to be NP-complete (by reduction to an
+instance of CLIQUE \cite{gj79}). To deal with this a
+restriction is placed on the length of interesting patterns
+discovered.  Naive algorithms presented are based on expanding an
+interesting pattern with prefix and suffic operators and then
+examining the interestingness of the generated rules. The
+non-monotonicity of the approach prevent interesting patterns being
+expanded by anything more than a single literal preventing
+conjunctions (not included in their syntax) of temporal operators
+being discovered. Results show that the length restriction prevents
+significant knowledge from being discovered once the data set grows
+too large. In the case of simulations conducted on web log data this
+was 1400 points.
+
+
+\medskip
+
+\cite{sa96} essentially applies the discovery of association rules in a
+temporal setting. We now present data mining research on time series
+rule discovery. \cite{frm94} present the goal of mining a time series as
+that of searching for a subsequence in the series which matches a
+given query. The discrete Fourier transform is used for
+mapping the time series into the frequency domain and then forming a
+trail in multi-dimensional feature space based on the first $f$
+coefficients so that the time series can be clustered into rectangles
+in feature space. This allows similarity queries to then be answered. 
+Results show these
+procedures to be more efficient than standard sequential scanning
+processes. \cite{alss95,dgm97,rm97} compare the similarity of time
+series by examing non-overlapping time ordered pairs of
+subsequences. Again the subsequences are similar if the number of
+matches exceeds a given threshold. Offsets, gaps, and scaling are all
+addressed by this model. \cite{dgm97} presents a number of
+transformation functions specifically to handle outliers and
+scaling. The goal here is to {\em approximately} map one sequence into
+another. \cite{ks97} has the same goal and uses templates which are
+deformed by a probability distribution.
+
+\medskip
+
+\cite{dlm98} is closely associated with our research primarily in that
+it attempts to discover rules from time series, and we may view ND
+sequences as time series, then our logic can be said to have the same
+goal. \cite{dlm98} initially discretise the series and then attempt to
+cluster them according to similarity of the pattern. The
+discretisation creates a sequence of primitive shapes related to the
+chosen window size. The measures for clustering may range, in the
+simplest instance, from Euclidean distance to more sophisticated
+measures, not discussed here. A frequency is then attached to produce
+rules which are similar to assocation rules.
+
+
+\begin{definition}[Temporal Rule of \cite{dlm98}]
+\begin{rm}
+A temporal rule is of the form $A$
+\raisebox{-0.1cm}{$\stackrel{\Rightarrow}{\mbox{\tiny{T}}}$} $B$
+which denotes that {\em if A occurs, then B occurs within time T}. A
+frequency of the number of occurrences is associated with the rule as
+is a confidence in the rule obtained from the frequency divided by the
+number of occurrences of A, the left hand side, in the sequence.
+\end{rm}
+\end{definition}
+
+\cite{dlm98} also discusses extensions to multivariate series by
+having conjunctions of different patterns on the left hand side of the
+rule. This extends the applicability of their method and is discussed
+more fully in Chapter~\ref{chap:templog}.
+
+
+
+
+\subsection{Similarity Measures for Functional Dependency sets}\label{subsec:rev_fd_sim}
+\index{Similarity Measure}
+\index{Distance Measure}
+\index{Metric}
+\index{MAX set}
+\index{Maximal Non-determining set!see {MAX set}}
+\index{Distance Measure|see{SimilarityMeasure}}
+\index{Lattice Theory!of NDs}
+
+
+Data mining tools often require a {\em quality function} which assesses
+ and classifies the knowledge discovered in a form which is understandable
+by the user \cite{hs94}. In our
+work on the use of example relations within the database 
+design process we assessed the evolved relations via the use
+of a quality function \cite{cl96}. This quality function can
+be used to describe the proximity of relation $s$ to an Armstrong relation for a set F of functional dependencies (FDs), being one when the evolved 
+example relation is an Armstrong relation. This was taken to be the
+ symmetric difference of $GEN(F)$ and $GEN(dep(s))$, where
+$GEN(F)$ is the set of generators for a set of FDs $F$ \cite{mr86}, and
+$dep(s)$ is the dependency set holding in $s$. It is stated as:
+\begin{equation}\label{eq:quality}
+quality(F, s) = \frac{\mid GEN(F) \cap GEN(dep(s)) \mid}{\mid GEN(F) \cup GEN(dep(s))\mid }
+\end{equation}
+
+For example, two customer
+relations for different supermarkets may need to be assessed
+against a hypothetical optimally performing supermarket and/or
+against themselves. Obviously, a reliable distance measure
+is needed. Other areas of application occur in a database design
+context. We aim to assess this measure. We seek to characterise the distance 
+from Armstrong that a relation
+can be. In this way, for a relation $r$, we can infer exactly how
+{\em distant} $r$ is from the best relation that can hold for any
+relation of the same size satisfying the same FD set.\\
+
+We now present an error measure of 
+\cite{km95}.  These
+are based on a dependency holding in a relation only if it does not
+contain violating pairs and so violating pairs. Therefore the number
+of tuples satisfying the FD is counted and the measure tells us the
+number of tuples required to obtain FD satisfaction. 
+\[
+g_3(X \to A) = 1 - \frac{max \{ \mid s \mid \mid s \subseteq r
+\quad\mbox{ and} \quad s \models X \to A \}}{\mid r \mid}
+\]
+
+
+
+\cite{tkr95} discuss a distance measure for association rules. A
+complete coverage of association rules can be found in \cite{ais93}.
+Association rule discovery in \cite{ais93} assumes a binary database.
+For relation $r$ with schema $R$, and given a set of attributes
+ $X \subseteq R$ and a tuple $t \in r$ if $t[A] = 1$  $\forall A \in X$
+then $t[X] = \bar{1}$.  The set of tuples matched by $X$ is
+$m(X) = \{ t \in r \mid t[X] = \bar{1} \}$.  The distance between
+two association rules $X \Rightarrow Z$ and $X \Rightarrow Z$ is
+defined as:
+\begin{eqnarray*}
+d(X \Rightarrow Z, Y \Rightarrow Z) & = & \mid (m(XZ) \cup m(YZ)) \setminus m(XYZ) \mid \\
+ 				    & = & \mid m(XZ) \mid + \mid m(YZ) \mid - 2 \mid m(XYZ) \mid
+\end{eqnarray*}
+
+\cite{tuo78} provides a general overview of distance in logical
+terms without any regard for practical methods of distance 
+evaluation. He notes, ``We can finally say that the more
+overlap or common content  (information) [theories] $T_1$ and $T_2$
+have, the closer they are.'' Within database design or mining, a
+designer may attach weights to the set of FDs implying his
+level of desire for a particular FD to be satisfied in
+preference to another or others. A normalised (the sum of
+all weights) distance can then be calculated based on these
+input factors. \\
+
+A function d($F_1$,$F_2$) is a metric iff it satisfies the
+following properties:
+\begin{eqnarray}
+d(F_1,F_2) & = & d(F_2, F_1)  \\
+d(F_1,F_2)   & = & 0 \quad\mbox{ if and only if}\quad F_1 = F_2  \\
+d(F_1,F_3)   & \le & d(F_1,F_2) + d(F_2,F_3) 
+\end{eqnarray}
+
+A distance function which violates the last property, known as the
+triangle inequality, is known as a pseudo-metric, and of use within
+distance theory. 
+
+We now define a similarity measure between two FD sets $F$ and $G$ as
+a generalisation of the quality function previously defined. Such a
+similarity measure is of use in data mining whenever we desire to
+compare two FD sets. \cite{km95} define a metric $d_p(F,G)$ = ${\cal
+P}$(CL(F) $\Delta$ CL(G)), where $\Delta$ is the symmetric difference and
+${\cal P}$ is a probability measure. The measure now defined is a
+ratio of the symmetric difference used directly. We study its
+properties and show how this might help the data miner.
+
+\begin{definition}[Similarity Measure]
+\begin{rm}
+Given two sets of FDs, F and G over R, we define the measure of
+their similarity as:
+\begin{displaymath}
+sim(F, G) = \frac{\mid CL(F) \cap CL(G) \mid}{\mid CL(F) \cup CL(G) \mid }
+\end{displaymath}
+\end{rm}
+\end{definition}
+
+We now seek to characterise the monotonicity properties of $sim$ with respect
+to $F$ and $G$. In equation~\ref{eq:f_xy} we consider the maximum
+possible values of $sim$ where one FD set $F$ is fixed, containing $n$
+elements in $CL(F)$. Any other FD set $G$
+containing $k$ elements in $CL(G)$ has a maximal quality, 
+if all FDs in $G$ are in $F$
+whenever $k \le n$, and if all FDs in $F$ are in $G$ whenever $k > n$.
+In figure~\ref{graph:simquality} we show 
+these variations for a fixed FD sets of sizs 3.
+
+\begin{equation}\label{eq:f_xy}
+sim_F(G) = \left\{ \begin{array}
+		{l@{\quad:\quad}ll}
+\frac{n}{k} & n \le k & \quad\mbox{when}\quad G^\star \supseteq F^\star\\
+\frac{k}{n} & n > k   & \quad\mbox{when}\quad F^\star \supset G^\star\\
+			\end{array}	\right.
+\end{equation}
+
+The similarity measure is monotonically increasing, given $x < y$:
+\begin{equation}\label{eq:mon}
+\frac{x + h}{y + h} > \frac{x}{y} \quad\mbox{if}\quad x < y
+\end{equation}
+
+Equation~\ref{eq:f_xyk} states that if the core of the two FD sets is
+increased by two different amounts, $m$ and $k$, where $m \le k$, then
+the value of similarity is larger for the larger core size increase.
+
+\begin{equation}\label{eq:f_xyk}
+\frac{x + m}{x + y + m} \le \frac{x+ k}{x + y + k} \quad\mbox{if}\quad m \le k
+\end{equation}
+
+Axioms of the similarity measure:
+\begin{enumerate}
+\item $sim(F, F) = 1$
+\item $sim(F, G) = sim(G, F)$
+\item $sim(F, G) = 0$, if $F^\star \cap G^\star = \emptyset$
+\item $sim(F, \emptyset) = 0$
+\item $sim(F, G) = \frac{|CL(F)|}{ |CL(G)|}$, if $F^\star \subseteq G^\star$
+\item  $sim(F,G) \le sim(G,H)$ if $F \subseteq H$ and
+the cardinality of the symmetric difference of H and F is less than or
+equal to the cardinality of the symmetric difference of G and F. 
+\end{enumerate}
+Information concerning related similarities can now be formed.  If we
+have three sets of FDs, $F$, $G$, and $H$, and assume that $F$ is
+fixed. Now, if $sim_F(G) = 0$ and $0 < sim_F(H) < 1$ then we know
+that $sim(G,H) < 1$ given that there is a similarity between $F$ and
+$H$. Essentially, this is stating that the core of $F$ and $H$ can not
+form cannot form any part of the core of $G$ and $H$. We have briefly
+presented an overview of a similarity measure for FD sets. Using
+knowledge of the measure itself allows for inferences to be drawn
+easily based on the input FD set and resulting values of the
+measure. This is of value within the knowledge discovery process.
+
+\begin{figure}
+\centerline{\scalebox{0.8}{\includegraphics{../Quality/re.eps}}}
+\caption{\label{graph:simquality}\scriptsize{Max Quality for an FD set of size 3}}
+\end{figure}
+
+
+
+\subsection{Relational Database Sampling Procedures}\label{subsec:dat_samp}
+\index{Sampling}
+\index{Sample Size}
+\index{PAC-learning}
+
+Many real-world databases are too large to consider applying standard
+data mining algorithms to, therefore, as a solution, sampling from
+such databases has been promoted \cite{km94,toi96b}. Samples drawn
+from a large database are mine for dependencies which are then
+associated with error and confidence thresholds based on the size of
+the sample in relation to the the database. Alternatively, results
+obtained from the mining of a sample may be verified against the
+database as a whole. In this mannery sampling is a necessary trade-off
+between accuracy and efficiency of results.
+
+\medskip
+
+\cite{km94} addresses the problem of finding a suitable sample
+size. This is presented within a PAC-learning framework
+\cite{val84}. Based on an error measure, aking to the similarity
+measure presented in section~\ref{subsec:rev_fd_sim} or $g_3$ of
+\cite{km95}, sampling is used to detect all sentences which have an
+error (or 1 - similarity) greater than a given threshold
+$\epsilon$. The probability that at least one sentence with an error
+greater than $\epsilon$ will not be formwed is given by $\delta$, the
+confidence parameter. FDs which hold are, obviously, never detected as
+false. \cite{toi96b} presents sampling within an exact discovery
+framework for association rules using a sample to find a superset of
+frequent associations subsequently verified by one pass over the
+database.
+
+\medskip
+
+To motivate our informal introduction to resampling, formalised in
+Chapter~\ref{chap:consistency}, we discuss the dynamic sampling
+methodology of \cite{jl96}.  Dynamic sampling, as defined in
+\cite{jl96}, is essentially the use of a PAC-learning error and
+confidence assessment with a dynamic setting.  The probability that
+the difference between the accuracy of the mining procedure applied to
+the entire database and the accuracy of it applied to the sample is
+greater than $\epsilon$, is less than or equal to the confidence
+$\delta$. The sample size is increased until this criterion is
+satisfied. We emply resampling in a similar dynamic manner on
+increasing sample sizes of possible worlds.  We do not bound our
+framework given that in an indefinite relation it is not feasible to
+examine every possible world.
+
+\subsubsection{Resampling in Statistics}
+
+We now introduce bootstrap resampling with a simple example. We
+formalise resampling in
+Chapter~\ref{chap:consist}. 
+
+\begin{figure}[ht]
+\centerline{\scalebox{0.45}{\rotatebox{270}{\includegraphics{thesis_pics1.ps}}}}
+\caption{\label{rev:bootstrap} The Bootstrap Procedure as applied to an
+indefinite relation with a Bootstrap Replication size (BRS) b}
+\end{figure}
+
+The following example is used for instruction and is similar
+to that described in \cite{et93} but with a business 
+application.
+If we have a relation depicting the number of clients in 
+two different companies with a number of the employees in
+each company as in Table~\ref{table:3.01}.
+
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline
+Company & Clients & Employees \\ \hline
+HAL co.	& 230		& 15746 \\
+JCN co. & 299 		& 13430 \\ \hline
+\end{tabular}
+\end{center}
+\caption{\label{table:3.01} Company Data Relation}
+\end{table}
+
+We can form a ratio of success $\hat{\theta}$ based on the number of clients
+for the respective number of employees, given as follows:
+
+\begin{displaymath}
+\hat{\theta} = \frac{230 / 15746}{299 / 13430} = 0.66
+\end{displaymath}
+
+So we can say that HAL co. is only 66\% as successful as JCN co. Yet
+this is only an estimated ratio. To apply a bootstrap procedure to
+the above data we can create two sample populations for each
+company and then, if we assume an optimal client - employee ratio is
+1 to 10 then we construct each sample population with 230 clients and
+(1575 - 230) employees and 299 clients and (1343 - 299) employees respectively.
+Now if we draw with replacement a sample of 1575 subjects and 1343 subjects
+we can form what is known as a bootstrap replicate sample $\hat{\theta^\star}$.
+\medskip
+
+Statistical methods have evolved rapidly for data mining purposed over
+the last 30 years. In the 70's statistical modelling was based upon
+decomposing the data into a structure and noise.  In the 80's
+processes such as the {\bf jackknife} were developed where n or more
+(possibly) correlated estimates of the quantity of interest are
+replaced by pseudovalues. Linear regression takes a linear combination
+of the available values whereas non-parametric models keep the data
+around and use it for estimating the response class of a new point.
+
+
+The bootstrap \cite{efro79,de83,et93,coh95} is a data driven
+simulation method for statistical inference. It is a computationally
+intensive procedure that has been shown to provide good results which
+would not have been capable of being readily generated more than 30 years ago.
+In our experience, statistical methods have not previously been 
+applied to solve database problems such as the consistency problem.
+Declining computational cost is altering the face of statistical analysis
+entailing a domino effect in other fields so that computer
+intensive statistical methods such as the bootstrap will become much
+more prominent in many areas of computer science over the next few years.
+Figure~\ref{rev:bootstrap} shows how the
+bootstrap procedure may be applied to an indefinite relation $R$. The
+sample in the figure will consist of $n$ possible worlds, each
+satisfying an ND set.
+
+
+
+\section{Discussion}
+
+
+We state here, that within the limits of our experience, there has
+been no work on the data mining of relations containing indefinite
+relations. Catalytic relations, those that are essentially the join of
+two or more relations, provide a possible avenue for indefinite
+information data mining if the join performed does not create the
+cartesian product but instead creates disjunction within cells which
+do not agree on their attributes.
+
+\medskip
+
+The work of \cite{Via87,Via88} was seminal in the field of temporal
+dependencies. Possible extensions discussed herein for NDs are viable
+for further study. Nearly all work on dependency mining
+\cite{Mann92,km95,sf93,bb95,hkp98} presents studies of the efficiency
+of dependency mining, frequently noting that large number of
+dependencies were discovered in relations. For example, \cite{sf93}
+reports the discovery of 1191 FDs in a relation with 471 tuples over
+17 attributes. Obviously the majority of these FDs discovered will be
+meaningless. We remark that there has been little work assessing the
+real value of FD discovery in the data mining process. Such
+meaningless FDs also motivate the use of a user supplied template to
+define FD approximations to dependencies which the user is interested
+in. 
+
+\medskip
+
+The previous work on temporal data mining requires more sophisticated
+methods if useful results are to be achieved. We cite the work of
+\cite{dlm98} as an exception to this and provide further comparisons
+in Chapter~\ref{chap:tempresult}.
+
+
+
+

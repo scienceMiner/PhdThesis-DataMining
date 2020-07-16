@@ -1,0 +1,84 @@
+\def \weak{\mid\!\approx}
+\def \notweak{\mid\!\not\approx}
+\def \mm{\mathcal{M}}
+\def \cover{-\!\!\!\!<}
+\def \half{\frac{1}{2}}
+\def \ttb{\begin{ttfamily}}
+\def \tte{\end{ttfamily}}
+\def \na{\newcounter{alg}\setcounter{alg}{1}\arabic{alg}}
+\def \ra{\setcounter{alg}{1}\arabic{alg}}
+\def \sa{\stepcounter{alg}\arabic{alg}}
+\def \techrep{\cite{cl98}}
+
+\documentclass[11pt]{article}
+\usepackage[dvips]{graphics}
+\usepackage{latexsym,ucl_a4}
+
+
+\title{Mining for NDs in a relation}
+
+\author{ Ethan Collopy}
+
+\date{\today}  
+ 
+\begin{document} 
+        
+
+\maketitle 
+\bibliographystyle{alpha}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{algorithm}{Algorithm}
+\newtheorem{example}{Example}[section]
+
+
+\section{Algorithm}
+
+We consider only singleton right hand sides. For a relation $R$ with
+$n$ attributes we have $n 2^{n-1}$ NDs returned by this algorithm.
+
+\medskip
+
+
+\begin{minipage}{16cm}
+\begin{algorithm}[{\rm ND\_mine}($r$, $R$)]\label{alg:mine}
+\begin{rm}
+\begin{tabbing}
+t1\=t2\=t3\=t4\=t5\=t6\=t7\=t8\=t9\= \kill \\
+\na.  \> \> {\bf begin} \\
+\sa.  \> \> \> ND\_set := $\emptyset$;\\
+\sa.  \> \> \> {\bf for each} $A \in R$ {\bf do}\\
+\sa.  \> \> \> \> {\bf for each} $W \in \mathcal{P}$(R - A) {\bf do}\\
+\sa.  \> \> \> \> \>  $max_k$ := 0; \\
+\sa.  \> \> \> \> \>   {\bf for each} partition ${\cal B}$ of $r$ on
+$W$ {\bf do}\\
+\sa.  \> \> \> \> \> \>  k := The number of different $A$ values in ${\cal B}$; \\
+\sa.  \> \> \>  \> \> \> {\bf if } k $> max_k$ {\bf then} \\
+\sa.  \> \> \> \> \>\>   \>$max_k$ := k; \\
+\sa. \> \> \> \> \> \>  {\bf end if}; \\
+\sa.  \> \> \> \> \>  \> ND\_set := ND\_set $\cup$ $\{ W \to^{max_k} A \}$; \\
+\sa. \> \> \>  \> \>  {\bf end for}; \\
+\sa. \> \> \>  \>   {\bf end for}; \\
+\sa. \> \> \>    {\bf end for}; \\
+\sa. \> \> \> {\bf return} ND\_set;  \\
+\sa. \> \> {\bf end.}
+\end{tabbing}
+\end{rm}
+\end{algorithm}
+\end{minipage}
+
+\medskip
+
+\section{Notes}
+
+\begin{itemize}
+\item The computational complexity of this algorithm is O($n^2 2^{n-1}
+\mid r \mid log \mid r \mid$)
+\item Drop supersets of attributes? Restrict to singleton left and right
+hand sides - O($n^3\mid r \mid log \mid r \mid$)
+\end{itemize}
+
+\end{document}

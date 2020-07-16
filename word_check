@@ -1,0 +1,32 @@
+# check word in all thesis chapters
+ 
+ 
+
+cd introduction
+wc introduction.tex
+cd ..
+
+cd review
+wc review.tex
+cd ..
+
+cd numdep
+wc numdep.tex
+cd ..
+
+cd consistency
+wc consist.tex
+cd ..
+
+cd templog
+wc templog.tex
+cd ..
+
+cd tempresult
+wc tempresult.tex
+cd ..
+
+cd conclusion
+wc conclusion.tex
+cd ..
+

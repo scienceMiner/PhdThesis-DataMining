@@ -1,0 +1,99 @@
+\def \cover{-\!\!\!<}
+\def \weak{\mid\!\approx}
+\def \notweak{\mid\!\not\approx}
+\def \mm{\mathcal{M}}
+\def \half{\frac{1}{2}}
+\def \temp{\to_{\otimes}}
+\def \time{\Longrightarrow}
+\def \live{\Diamond \Box}
+\def \a{\wedge}
+\def \eqto{\Longleftrightarrow}
+\def \up{\uparrow}
+\def \down{\downarrow}
+\def \last{\protect{\stackrel{-\!\!-}{\bigcirc}}}
+\def \next{\protect{\bigcirc}}
+\def \diamond{\protect{\Diamond\!\!\!\!-}}
+\def \diam{\protect{\mbox{\raisebox{-0.0353cm}{$\Diamond$}$\!\!\!\!\:\!\!-$}}}
+\def \dimo{\protect{\raisebox{-0.0353cm}{$\Diamond$}$\!\!\!\!\:\!\!-$}}
+\def \past{\protect{\stackrel{-\!\!-}{\Diamond}}}
+\def \allpast{\protect{\stackrel{-\!\!-}{\Box}}}
+\def \some{\protect{\Diamond^*}}
+\def \all{\protect{\Box^*}}
+\def \Tri{\bigtriangledown}
+\def \bm{\boxminus}
+\def \ttb{\begin{ttfamily}}
+\def \tte{\end{ttfamily}}
+\def \techrep{\cite{cl98}}
+\def \na{\newcounter{alg}\setcounter{alg}{1}\arabic{alg}}
+\def \ra{\setcounter{alg}{1}\arabic{alg}}
+\def \sa{\stepcounter{alg}\arabic{alg}}
+\def \line{\renewcommand{\baselinestretch}{1}}
+\newcommand{\resp}[2]{$\bm^{#1}$\diam$^{#2}$}
+\newcommand{\pers}[2]{\diam$^{#1}$$\bm^{#2}$}
+\newcommand{\series}[1]{$y_1, y_2, \ldots, y_{#1}$}
+\newcommand{\safe}[1]{$\bm^{#1}$}
+\newcommand{\guar}[1]{\diam$^{#1}$}
+
+\documentclass[11pt,oneside]{erc_ucl_thesis}
+\usepackage[dvips]{graphics}
+\usepackage{latexsym,erc_ucl,makeidx,amssymb,apalike}
+
+\makeindex
+
+\title{Data Mining Temporal and Indefinite Relations with Numerical Dependencies} 
+
+\author{
+Ethan Richard Collopy
+}
+
+\date{January 1999}  
+
+\newcommand{\avec}[1]{\ensuremath{#1_1, \ldots, #1_n}}
+\newcommand{\angavec}[1]{\ensuremath{\langle #1_1, \ldots, #1_n \rangle}}
+
+\includeonly{abstract/abstract,acknowledge/acknowledge,contents/contents,introduction/symbol-index,introduction/introduction,review/review,numdep/numdep,consistency/consist,templog/templog,tempresult/tempresult,conclusion/conclusion,con_prob/con_prob,exp_meth/exp_meth}
+
+\begin{document}         
+
+\pagenumbering{arabic}
+
+\maketitle 
+%\bibliographystyle{alpha}
+\bibliographystyle{apalike}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{algorithm}{Algorithm}
+\newtheorem{example}{Example}[section]
+
+
+\include{abstract/abstract}
+\include{acknowledge/acknowledge}
+%\include{publications/publications}
+\include{contents/contents}
+\include{introduction/symbol-index}
+\include{introduction/introduction}
+\include{review/review}
+\include{numdep/numdep}
+\include{consistency/consist}
+\include{templog/templog}
+\include{tempresult/tempresult}
+\include{conclusion/conclusion}
+
+{\setlength{\baselineskip}{14pt}
+\bibliography{bibliography/Assoc,bibliography/Rough_sets,bibliography/Tabu,bibliography/Comp_books,bibliography/NPcomplete,bibliography/Concept_latt,bibliography/DB_design,bibliography/Databases,bibliography/Databases4,bibliography/Dependency,bibliography/Fuzzy,bibliography/Logic_Ddb,bibliography/Logic_Prog,bibliography/Logic_Theory,bibliography/Know_disc,bibliography/Know_disc2,bibliography/Philosophy,bibliography/Maths,bibliography/Prob_DBs,bibliography/Dynamics,bibliography/Mining,bibliography/Armstrong,bibliography/ga_pap,bibliography/Sim_An,bibliography/Warehouse,bibliography/time_s,bibliography/ilp,bibliography/Time_dbs,bibliography/Prob,bibliography/Spatial_dm,bibliography/Patterns,bibliography/Game_Theory,bibliography/Learning,bibliography/Neural,bibliography/Lattices,bibliography/Random,bibliography/Entropy,bibliography/Stats,bibliography/modelling,bibliography/Optimize,bibliography/Logic_time,bibliography/db_evolution,bibliography/Bootstrap_Apps,bibliography/Object_db,bibliography/Automata,bibliography/Concurrency,bibliography/ethan,bibliography/Incomp_inf,bibliography/Ecommerce,bibliography/Int_constraints,bibliography/Regression,bibliography/Temp_mine,bibliography/Education,bibliography/Sequence}
+}
+
+\appendix
+\include{con_prob/con_prob}
+\include{exp_meth/exp_meth}
+
+{\setlength{\baselineskip}{13pt}
+\printindex
+}
+
+\end{document}
+
