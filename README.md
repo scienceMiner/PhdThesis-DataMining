@@ -28,7 +28,7 @@ All simulations were implemented in C++.
 The work herein is Copyright 1999-2029 Ethan Collopy and The University of London. No rights are given to reproduce or modify this work without permission.
 
 ### Plagiarism
-No point!
+No point! Don't plagiarise or take on loan, the words you write should be your own.
 
 ### LaTeX compilation
 Written before pdflatex so use latex->dvi->ps
